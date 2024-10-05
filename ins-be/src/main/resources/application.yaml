@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: ins-be
+  datasource:
+    url: jdbc:mysql://localhost:3307/insclone
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
+
+
+server:
+  port: 8888
+  servlet:
+    "/api"
+
+jwt:
+  signerKey: ZnjLwNmSRIuZ1PbtYkTEbUC60gEbjucoBYT20JY2HQjJtA8hf4poYAav6NAY7uxL
+
+
