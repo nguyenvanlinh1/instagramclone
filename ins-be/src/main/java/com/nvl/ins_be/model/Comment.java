@@ -7,10 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @NoArgsConstructor
@@ -29,25 +26,35 @@ public class Comment {
     @Column(name = "content")
     String content;
 
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "user_id", column = @Column(name = "user_id")),
-            @AttributeOverride(name = "user_email", column = @Column(name = "user_email"))
-    })
-    User user;
+    @ManyToOne
+    @JoinColumn(name = "post_id", nullable = false)
+    private Post post;
 
-    @Embedded
-    @ElementCollection
-    @JoinTable(name = "likedByUsers", joinColumns = @JoinColumn(name = "user_id"))
-    Set<User> likedByUsers = new HashSet<>();
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    List<Comment> replayComment = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "story_id", nullable = false)
+    private Story story;
+
+    @ManyToOne
+    @JoinColumn(name = "parent_comment_id")
+    private Comment parentComment;
+
+    @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Comment> replyComments = new LinkedHashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "comment_like",
+            joinColumns = @JoinColumn(name = "comment_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    Set<User> likedCommentByUser;
 
     @Column(name = "create_at")
     @CreationTimestamp
     LocalDateTime createAt;
 
-    @Column(name = "update_at")
-    @UpdateTimestamp
-    LocalDateTime updateAt;
 }

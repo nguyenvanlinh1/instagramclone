@@ -19,4 +19,12 @@ public class Image {
 
     @Column(name = "image_url")
     String imageUrl;
+
+    @ManyToOne
+    @JoinColumn(name = "post_id", nullable = false)
+    private Post post;
+
+    @ManyToOne
+    @JoinColumn(name = "story_id", nullable = false)
+    private Story story;
 }

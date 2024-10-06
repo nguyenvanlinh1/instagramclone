@@ -38,30 +38,38 @@ public class Post {
     @Column(name = "status")
     String status;
 
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "user_id", column = @Column(name = "user_id")),
-            @AttributeOverride(name = "user_email", column = @Column(name = "user_email"))
-    })
+//    @Embedded
+//    @AttributeOverrides({
+//            @AttributeOverride(name = "username", column = @Column(name = "username")),
+//            @AttributeOverride(name = "user_image", column = @Column(name = "user_image"))
+//    })
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
     User user;
 
-    @Embedded
-    @ElementCollection
-    @JoinTable(name = "likedByUsers", joinColumns = @JoinColumn(name = "user_id"))
-    Set<User> likedByUsers = new HashSet<>();
+//    @Embedded
+//    @ElementCollection
+//    @JoinTable(name = "sharedPostByUsers", joinColumns = @JoinColumn(name = "post_id"))
+//    Set<User> sharedByUsers;
 
-    @Embedded
-    @ElementCollection
-    @JoinTable(name = "sharedByUsers", joinColumns = @JoinColumn(name = "user_id"))
-    Set<User> sharedByUsers = new HashSet<>();
+    @ManyToMany
+    @JoinTable(
+            name = "post_save",
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    Set<User> savedByUsers;
 
-    @Embedded
-    @ElementCollection
-    @JoinTable(name = "savedByUsers", joinColumns = @JoinColumn(name = "user_id"))
-    Set<User> savedByUsers = new HashSet<>();
+    @ManyToMany
+    @JoinTable(
+            name = "post_like",
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    Set<User> likedByUsers;
 
-    @OneToMany
-    List<Comment> commentList = new ArrayList<>();
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    Set<Comment> comments;
 
     @Column(name = "create_at")
     @CreationTimestamp

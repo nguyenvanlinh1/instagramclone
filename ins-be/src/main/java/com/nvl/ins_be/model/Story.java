@@ -7,7 +7,6 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -27,20 +26,23 @@ public class Story {
     @Column(name = "caption")
     String caption;
 
-    @OneToMany
+    @OneToMany(mappedBy = "story", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<Image> imageList = new ArrayList<>();
 
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "user_id", column = @Column(name = "user_id")),
-            @AttributeOverride(name = "user_email", column = @Column(name = "user_email"))
-    })
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
     User user;
 
-    @Embedded
-    @ElementCollection
-    @JoinTable(name = "likedByUsers", joinColumns = @JoinColumn(name = "user_id"))
-    Set<User> likedByUsers = new HashSet<>();
+    @OneToMany(mappedBy = "story", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    Set<Comment> comments;
+
+    @ManyToMany
+    @JoinTable(
+            name = "story_like",
+            joinColumns = @JoinColumn(name = "comment_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    Set<User> likedStoryByUser;
 
     @Column(name = "create_at")
     @CreationTimestamp
