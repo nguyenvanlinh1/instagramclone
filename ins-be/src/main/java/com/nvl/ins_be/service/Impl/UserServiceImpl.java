@@ -10,7 +10,7 @@ import com.nvl.ins_be.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.security.core.context.SecurityContext;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,6 +20,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     UserRepository userRepository;
@@ -45,9 +46,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUser(Long userId, UserRequest userRequest) {
         User updateUser = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        updateUser.setUserImage(updateUser.getUserImage());
-        updateUser.setBio(updateUser.getBio());
-        updateUser.setGender(updateUser.getGender());
+        updateUser.setUserImage(userRequest.getUserImage());
+        updateUser.setBio(userRequest.getBio());
+        updateUser.setGender(userRequest.getGender());
         return userRepository.save(updateUser);
     }
 
@@ -65,6 +66,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> findAllUserByUsername(String username) {
-        return userRepository.findUserByName(username);
+        List<User> users = userRepository.findUserByName(username);
+        if(users.isEmpty()){
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
+        }
+        return users;
     }
 }

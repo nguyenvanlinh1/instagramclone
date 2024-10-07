@@ -1,10 +1,7 @@
 package com.nvl.ins_be.dto.request;
 
-import com.nvl.ins_be.model.Image;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.Set;
 
 @Data
 @NoArgsConstructor

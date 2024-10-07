@@ -17,7 +17,8 @@ spring:
 server:
   port: 8888
   servlet:
-    "/api"
+    context-path: /api
+
 
 jwt:
   signerKey: ZnjLwNmSRIuZ1PbtYkTEbUC60gEbjucoBYT20JY2HQjJtA8hf4poYAav6NAY7uxL

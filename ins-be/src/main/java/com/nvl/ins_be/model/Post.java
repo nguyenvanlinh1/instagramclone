@@ -1,5 +1,6 @@
 package com.nvl.ins_be.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -7,15 +8,13 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "post")
@@ -29,8 +28,8 @@ public class Post {
     @Column(name = "caption")
     String caption;
 
-    @OneToMany
-    List<Image> imageList = new ArrayList<>();
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<ImagePost> imageList = new LinkedHashSet<>();
 
     @Column(name = "location")
     String location;
@@ -45,6 +44,7 @@ public class Post {
 //    })
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     User user;
 
 //    @Embedded
@@ -69,7 +69,7 @@ public class Post {
     Set<User> likedByUsers;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    Set<Comment> comments;
+    Set<CommentPost> comments;
 
     @Column(name = "create_at")
     @CreationTimestamp

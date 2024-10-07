@@ -3,14 +3,8 @@ package com.nvl.ins_be.service.Impl;
 import com.nvl.ins_be.dto.request.CommentRequest;
 import com.nvl.ins_be.exception.AppException;
 import com.nvl.ins_be.exception.ErrorCode;
-import com.nvl.ins_be.model.Comment;
-import com.nvl.ins_be.model.Post;
-import com.nvl.ins_be.model.Story;
-import com.nvl.ins_be.model.User;
-import com.nvl.ins_be.repository.CommentRepository;
-import com.nvl.ins_be.repository.PostRepository;
-import com.nvl.ins_be.repository.StoryRepository;
-import com.nvl.ins_be.repository.UserRepository;
+import com.nvl.ins_be.model.*;
+import com.nvl.ins_be.repository.*;
 import com.nvl.ins_be.service.CommentService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -28,86 +22,129 @@ public class CommentServiceImpl implements CommentService {
     PostRepository postRepository;
     StoryRepository storyRepository;
     UserRepository userRepository;
-    CommentRepository commentRepository;
+    CommentPostRepository commentPostRepository;
+    CommentStoryRepository commentStoryRepository;
 
     @Override
-    public Comment createCommentPost(Long userId, Long postId, CommentRequest request) {
+    public CommentPost createCommentPost(Long userId, Long postId, CommentRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         Post post = postRepository.findById(postId).orElseThrow(() -> new AppException(ErrorCode.POST_NOT_EXISTED));
 
-        Comment comment = new Comment();
+        CommentPost comment = new CommentPost();
         comment.setContent(request.getContent());
         comment.setPost(post);
         comment.setUser(user);
 
         post.getComments().add(comment);
         postRepository.save(post);
-        return commentRepository.save(comment);
+        return comment;
     }
 
     @Override
-    public Comment createCommentStory(Long userId, Long storyId, CommentRequest request) {
+    public CommentStory createCommentStory(Long userId, Long storyId, CommentRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         Story story = storyRepository.findById(storyId).orElseThrow(() -> new AppException(ErrorCode.STORY_NOT_EXISTED));
 
-        Comment comment = new Comment();
+        CommentStory comment = new CommentStory();
         comment.setContent(request.getContent());
         comment.setStory(story);
         comment.setUser(user);
 
         story.getComments().add(comment);
         storyRepository.save(story);
-        return commentRepository.save(comment);
+        return comment;
     }
 
     @Override
-    public Comment createCommentReplay(Long userId, Long parentId, CommentRequest request) {
+    public CommentPost createCommentPostReplay(Long userId, Long parentId, CommentRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        Comment parentComment  = commentRepository.findById(parentId).orElseThrow(() -> new AppException(ErrorCode.STORY_NOT_EXISTED));
+        CommentPost parentComment  = commentPostRepository.findById(parentId).orElseThrow(() -> new AppException(ErrorCode.POST_NOT_EXISTED));
 
-        Comment commentReplay = Comment.builder()
+        CommentPost commentReplay = CommentPost.builder()
                 .parentComment(parentComment)
                 .user(user)
                 .content(request.getContent())
                 .post(parentComment.getPost())
+                .build();
+
+        return commentPostRepository.save(commentReplay);
+    }
+
+    @Override
+    public CommentStory createCommentStoryReplay(Long userId, Long parentId, CommentRequest request) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        CommentStory parentComment  = commentStoryRepository.findById(parentId).orElseThrow(() -> new AppException(ErrorCode.STORY_NOT_EXISTED));
+
+        CommentStory commentReplay = CommentStory.builder()
+                .parentComment(parentComment)
+                .user(user)
+                .content(request.getContent())
                 .story(parentComment.getStory())
                 .build();
 
-        return commentRepository.save(commentReplay);
+        return commentStoryRepository.save(commentReplay);
     }
 
+
     @Override
-    public void deleteComment(Long commentId, Long userId) {
+    public void deleteCommentStory(Long commentId, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_EXISTED));
+        CommentStory comment = commentStoryRepository.findById(commentId).orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_EXISTED));
 
         if(!comment.getUser().getUserId().equals(userId)) throw new AppException(ErrorCode.UNAUTHORIZED_ACTION);
 
-        commentRepository.delete(comment);
+        commentStoryRepository.delete(comment);
     }
 
     @Override
-    public List<Comment> getCommentByPost(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new AppException(ErrorCode.POST_NOT_EXISTED));
-        return commentRepository.findByPost(post);
-    }
-
-    @Override
-    public List<Comment> getCommentByStory(Long storyId) {
-        Story story = storyRepository.findById(storyId).orElseThrow(() -> new AppException(ErrorCode.STORY_NOT_EXISTED));
-        return commentRepository.findByStory(story);
-    }
-
-    @Override
-    public List<Comment> getCommentByCommentReplay(Long commentId) {
-        Comment commentParent = commentRepository.findById(commentId).orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_EXISTED));
-        return commentRepository.findByParentComment(commentParent);
-    }
-
-    @Override
-    public void likeComment(Long userId, Long commentId) {
+    public void deleteCommentPostReplay(Long commentId, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_EXISTED));
+
+    }
+
+    @Override
+    public void deleteCommentStoryReplay(Long commentId, Long userId) {
+
+    }
+
+    @Override
+    public void deleteCommentPost(Long commentId, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        CommentPost comment = commentPostRepository.findById(commentId).orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_EXISTED));
+
+        if(!comment.getUser().getUserId().equals(userId)) throw new AppException(ErrorCode.UNAUTHORIZED_ACTION);
+
+        commentPostRepository.delete(comment);
+    }
+
+    @Override
+    public List<CommentPost> getCommentByPost(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new AppException(ErrorCode.POST_NOT_EXISTED));
+        return commentPostRepository.findByPost(post);
+    }
+
+    @Override
+    public List<CommentStory> getCommentByStory(Long storyId) {
+        Story story = storyRepository.findById(storyId).orElseThrow(() -> new AppException(ErrorCode.STORY_NOT_EXISTED));
+        return commentStoryRepository.findByStory(story);
+    }
+
+    @Override
+    public List<CommentPost> getCommentPostByCommentReplay(Long commentId) {
+        CommentPost commentParent = commentPostRepository.findById(commentId).orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_EXISTED));
+        return commentPostRepository.findByParentComment(commentParent);
+    }
+
+    @Override
+    public List<CommentStory> getCommentStoryByCommentReplay(Long commentId) {
+        CommentStory commentParent = commentStoryRepository.findById(commentId).orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_EXISTED));
+        return commentStoryRepository.findByParentComment(commentParent);
+    }
+
+    @Override
+    public void likeCommentPost(Long userId, Long commentId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        CommentPost comment = commentPostRepository.findById(commentId).orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_EXISTED));
 
         Set<User> likedCommentByUser = comment.getLikedCommentByUser();
         if(likedCommentByUser.contains(user)){
@@ -117,13 +154,13 @@ public class CommentServiceImpl implements CommentService {
             likedCommentByUser.add(user);
         }
         comment.setLikedCommentByUser(likedCommentByUser);
-        commentRepository.save(comment);
+        commentPostRepository.save(comment);
     }
 
     @Override
-    public void unLikeComment(Long userId, Long commentId) {
+    public void unLikeCommentPost(Long userId, Long commentId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_EXISTED));
+        CommentPost comment = commentPostRepository.findById(commentId).orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_EXISTED));
         Set<User> likedCommentByUser = comment.getLikedCommentByUser();
 
         if (likedCommentByUser.contains(user)) {
@@ -132,6 +169,37 @@ public class CommentServiceImpl implements CommentService {
             throw new AppException(ErrorCode.USER_NOT_EXISTED);
         }
         comment.setLikedCommentByUser(likedCommentByUser);
-        commentRepository.save(comment);
+        commentPostRepository.save(comment);
+    }
+
+    @Override
+    public void likeCommentStory(Long userId, Long commentId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        CommentStory comment = commentStoryRepository.findById(commentId).orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_EXISTED));
+
+        Set<User> likedCommentByUser = comment.getLikedCommentByUser();
+        if(likedCommentByUser.contains(user)){
+            throw new AppException(ErrorCode.USER_EXISTED);
+        }
+        else{
+            likedCommentByUser.add(user);
+        }
+        comment.setLikedCommentByUser(likedCommentByUser);
+        commentStoryRepository.save(comment);
+    }
+
+    @Override
+    public void unLikeCommentStory(Long userId, Long commentId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        CommentStory comment = commentStoryRepository.findById(commentId).orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_EXISTED));
+        Set<User> likedCommentByUser = comment.getLikedCommentByUser();
+
+        if (likedCommentByUser.contains(user)) {
+            likedCommentByUser.remove(user);
+        } else {
+            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+        }
+        comment.setLikedCommentByUser(likedCommentByUser);
+        commentStoryRepository.save(comment);
     }
 }

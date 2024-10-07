@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/follow")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FollowController {
@@ -21,7 +20,7 @@ public class FollowController {
     FollowService followService;
     UserService userService;
 
-    @GetMapping("/follower")
+    @GetMapping("/follower/{followId}")
     ApiResponse<List<User>> getFollower(@PathVariable Long followId){
         User user = userService.getUser();
         return ApiResponse.<List<User>>builder()
@@ -29,7 +28,7 @@ public class FollowController {
                 .build();
     }
 
-    @GetMapping("/followed")
+    @GetMapping("/followed/{followId}")
     ApiResponse<List<User>> getFollowed(@PathVariable Long followId){
         User user = userService.getUser();
         return ApiResponse.<List<User>>builder()

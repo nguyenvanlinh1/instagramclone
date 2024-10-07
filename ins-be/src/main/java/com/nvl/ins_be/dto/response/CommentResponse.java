@@ -6,9 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -23,6 +21,6 @@ public class CommentResponse {
     Post post;
     User user;
     Story story;
-    List<Comment> replayComment;
+    List<CommentPost> replayComment;
     LocalDateTime createAt;
 }

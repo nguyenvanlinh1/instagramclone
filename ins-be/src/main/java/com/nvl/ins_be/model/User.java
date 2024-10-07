@@ -1,7 +1,8 @@
 package com.nvl.ins_be.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
@@ -25,10 +26,10 @@ public class User {
     Long userId;
 
     @Column(name = "username")
+    @NotEmpty
     String username;
 
     @Column(name = "password")
-    @Size(min = 8, message = "INVALID_PASSWORD")
     String password;
 
     @Column(name = "user_email")
@@ -47,10 +48,12 @@ public class User {
     String bio;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     Set<Post> posts;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    Set<Comment> comments;
+    @JsonIgnore
+    Set<CommentPost> comments;
 
     @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     Set<Follow> followers;
@@ -60,9 +63,6 @@ public class User {
 
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     Set<Message> sentMessage;
-
-    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    Set<Message> receivedMessages;
 
     @Column(name = "create_at")
     @CreationTimestamp

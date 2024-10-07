@@ -7,8 +7,7 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @NoArgsConstructor
@@ -17,36 +16,45 @@ import java.util.Set;
 @Setter
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "story")
-public class Story {
+@Table(name = "comment")
+public class CommentPost {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "story_id")
-    Long storyId;
+    @Column(name = "comment_id")
+    Long commentId;
 
-    @Column(name = "caption")
-    String caption;
+    @Column(name = "content")
+    String content;
 
-    @OneToMany(mappedBy = "story", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    Set<ImageStory> imageList = new LinkedHashSet<>();
+    @ManyToOne
+    @JoinColumn(name = "post_id", nullable = false)
+    @JsonIgnore
+    private Post post;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnore
-    User user;
+    private User user;
 
-    @OneToMany(mappedBy = "story", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    Set<CommentStory> comments;
+    @ManyToOne
+    @JoinColumn(name = "parent_comment_id")
+    @JsonIgnore
+    private CommentPost parentComment;
+
+    @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<CommentPost> replyComments = new LinkedHashSet<>();
 
     @ManyToMany
     @JoinTable(
-            name = "story_like",
+            name = "comment_like_post",
             joinColumns = @JoinColumn(name = "comment_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    Set<User> likedStoryByUser;
+    Set<User> likedCommentByUser;
 
     @Column(name = "create_at")
     @CreationTimestamp
     LocalDateTime createAt;
+
 }

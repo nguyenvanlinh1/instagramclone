@@ -3,6 +3,7 @@ package com.nvl.ins_be.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -24,12 +25,17 @@ public class Message {
     @JoinColumn(name = "sender_id", nullable = false)
     User sender;
 
-    @ManyToOne
-    @JoinColumn(name = "receiver_id", nullable = false)
-    User receiver;
+//    @ManyToOne
+//    @JoinColumn(name = "receiver_id", nullable = false)
+//    User receiver;
 
     @Column(name = "content", nullable = false)
     String content;
 
+    @ManyToOne
+    @JoinColumn(name = "chat_id", nullable = false)
+    Chat chat;
+
+    @CreationTimestamp
     LocalDateTime createdAt;
 }

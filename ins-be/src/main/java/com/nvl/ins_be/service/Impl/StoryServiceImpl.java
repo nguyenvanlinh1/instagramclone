@@ -1,8 +1,10 @@
 package com.nvl.ins_be.service.Impl;
 
+import com.nvl.ins_be.dto.request.ImageRequest;
 import com.nvl.ins_be.dto.request.StoryRequest;
 import com.nvl.ins_be.exception.AppException;
 import com.nvl.ins_be.exception.ErrorCode;
+import com.nvl.ins_be.model.ImageStory;
 import com.nvl.ins_be.model.Story;
 import com.nvl.ins_be.model.User;
 import com.nvl.ins_be.repository.StoryRepository;
@@ -13,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -28,8 +32,15 @@ public class StoryServiceImpl implements StoryService {
     public Story createStory(User user, StoryRequest request) {
         Story story = new Story();
         story.setCaption(request.getCaption());
-        story.setImageList(request.getImages().stream().toList());
         story.setUser(user);
+        Set<ImageStory> imageStories = new LinkedHashSet<>();
+        for(ImageRequest imageRequest : request.getImages()){
+            ImageStory imageStory = new ImageStory();
+            imageStory.setImageUrl(imageRequest.getImageUrl());
+            imageStory.setStory(story);
+            imageStories.add(imageStory);
+        }
+        story.setImageList(imageStories);
         return storyRepository.save(story);
     }
 

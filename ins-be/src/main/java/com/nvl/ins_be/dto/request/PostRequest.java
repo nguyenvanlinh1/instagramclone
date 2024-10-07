@@ -1,10 +1,8 @@
 package com.nvl.ins_be.dto.request;
 
-import com.nvl.ins_be.model.Image;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
@@ -16,7 +14,7 @@ public class PostRequest {
 
     String caption;
     String location;
-    Set<Image> images;
+    Set<ImageRequest> images;
     String status;
 
 }

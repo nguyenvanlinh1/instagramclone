@@ -1,6 +1,6 @@
 package com.nvl.ins_be.dto.response;
 
-import com.nvl.ins_be.model.Image;
+import com.nvl.ins_be.model.ImagePost;
 import com.nvl.ins_be.model.User;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -18,7 +18,7 @@ public class StoryResponse {
 
     Long storyId;
     String caption;
-    Set<Image> images = new LinkedHashSet<>();
+    Set<ImagePost> images = new LinkedHashSet<>();
     LocalDateTime createAt;
     User user;
 }

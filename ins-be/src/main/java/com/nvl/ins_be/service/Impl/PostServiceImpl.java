@@ -1,8 +1,10 @@
 package com.nvl.ins_be.service.Impl;
 
+import com.nvl.ins_be.dto.request.ImageRequest;
 import com.nvl.ins_be.dto.request.PostRequest;
 import com.nvl.ins_be.exception.AppException;
 import com.nvl.ins_be.exception.ErrorCode;
+import com.nvl.ins_be.model.ImagePost;
 import com.nvl.ins_be.model.Post;
 import com.nvl.ins_be.model.User;
 import com.nvl.ins_be.repository.PostRepository;
@@ -13,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -29,9 +32,19 @@ public class PostServiceImpl implements PostService {
         Post post = new Post();
         post.setCaption(request.getCaption());
         post.setLocation(request.getLocation());
-        post.setImageList(request.getImages().stream().toList());
         post.setStatus(request.getStatus());
         post.setUser(user);
+
+        Set<ImagePost> images = new LinkedHashSet<>();
+        for (ImageRequest imageRequest : request.getImages()){
+            ImagePost newImage = new ImagePost();
+            newImage.setImageUrl(imageRequest.getImageUrl());
+            newImage.setPost(post);
+            images.add(newImage);
+        }
+
+        post.setImageList(images);
+
         return postRepository.save(post);
     }
 
@@ -40,8 +53,16 @@ public class PostServiceImpl implements PostService {
         Post post = postRepository.findById(postId).orElseThrow(() -> new AppException(ErrorCode.POST_EXISTED));
         post.setCaption(request.getCaption());
         post.setLocation(request.getLocation());
-        post.setImageList(request.getImages().stream().toList());
         post.setStatus(request.getStatus());
+        post.getImageList().clear();
+        Set<ImagePost> images = new LinkedHashSet<>();
+        for(ImageRequest imageRequest : request.getImages()){
+            ImagePost updateImage = ImagePost.builder()
+                    .imageUrl(imageRequest.getImageUrl())
+                    .post(post)
+                    .build();
+            post.getImageList().add(updateImage);
+        }
         return postRepository.save(post);
     }
 
