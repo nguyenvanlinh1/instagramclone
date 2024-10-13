@@ -24,8 +24,11 @@ public class Chat {
     @Column(name = "chat_id")
     Long chatId;
 
-    @Column(name="chat_name")
+    @Column(name= "chat_name")
     String chatName;
+
+    @Column(name= "chat_image")
+    String chatImage;
 
     @ManyToMany
     Set<User> admins = new LinkedHashSet<>();

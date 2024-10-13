@@ -3,18 +3,29 @@ import { TbCircleDashed } from "react-icons/tb";
 import { BsThreads } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { findUserByUsername } from "../../../State/User/Action";
-import { Button, useDisclosure } from "@chakra-ui/react";
+import {
+  Button,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+  useDisclosure,
+} from "@chakra-ui/react";
 import ListFollower from "./ListFollower";
 import ListFollowed from "./ListFollowed";
 import { useNavigate, useParams } from "react-router-dom";
-import { checkUser } from "../../../State/User/Logic";
 import { FaChevronDown } from "react-icons/fa";
 import { HiDotsHorizontal } from "react-icons/hi";
 import { getAllPostByUserId } from "../../../State/Post/Action";
-import { getFollowed, getFollower } from "../../../State/Follow/Action";
+import {
+  getFollowed,
+  getFollower,
+  getMyFollowed,
+} from "../../../State/Follow/Action";
 import { createChat } from "../../../State/Chat/Action";
+import { checkFollowed } from "../../../State/Follow/Logic";
 const ProfileUserDetails = () => {
-  const [isUser, setIsUser] = useState(true);
+  const [isUserFollowed, setIsUserFollowed] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
@@ -25,28 +36,28 @@ const ProfileUserDetails = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { user } = useSelector((store) => store);
-  const { follow } = useSelector((store) => store);
-  const { post } = useSelector((store) => store);
+  const { user, follow, post } = useSelector((store) => store);
   const param = useParams();
 
   useEffect(() => {
     dispatch(findUserByUsername(param.username));
-  }, []);
+  }, [param.username]);
+
   const usernew = user.byusername.data?.result;
 
   const uu = user.user.data?.result;
+  const ff = follow.follow.data?.result;
 
   useEffect(() => {
-    setIsUser(checkUser(usernew?.userId, uu));
-  }, []);
+    dispatch(getAllPostByUserId(usernew?.userId));
+    dispatch(getFollowed(usernew?.userId));
+    dispatch(getFollower(usernew?.userId));
+    dispatch(getMyFollowed());
+  }, [usernew?.userId, follow.notification]);
 
   useEffect(() => {
-      dispatch(getAllPostByUserId(usernew?.userId))
-      dispatch(getFollowed(usernew?.userId));
-      dispatch(getFollower(usernew?.userId));
-  }, [usernew?.userId, follow.notification])
-
+    setIsUserFollowed(checkFollowed(usernew?.userId, ff));
+  }, [ff]);
   const handleEdit = () => {
     navigate("edit");
   };
@@ -56,26 +67,26 @@ const ProfileUserDetails = () => {
   };
 
   const handleCreateChat = (userId) => {
-    dispatch(createChat({userId}))
-    navigate("/message")
-  }
+    dispatch(createChat({ userId }));
+    navigate("/message");
+  };
   return (
     <div className="py-10 w-full">
-      {isUser ? (
+      {uu?.userId === usernew?.userId ? (
         <div className="flex items-center">
           <div className="w-[15%]">
             <img
               className="w-32 h-32 rounded-full"
               src={
-                uu?.userImage
-                  ? uu?.userImage
+                usernew?.userImage
+                  ? usernew?.userImage
                   : "https://hzshop.ir/img/accountimg.png"
               }
             ></img>
           </div>
           <div className="space-y-5">
             <div className="flex space-x-10 items-center pl-5">
-              <p className="cursor-pointer">{uu?.username}</p>
+              <p className="cursor-pointer">{usernew?.username}</p>
               <button
                 className="bg-[#F5F5F5] p-2 rounded-lg"
                 onClick={handleEdit}
@@ -105,6 +116,7 @@ const ProfileUserDetails = () => {
                   isOpen={isOpen}
                   onClose={onClose}
                   follower={follow.follower.data}
+                  follow={ff}
                 />
               </div>
               <div className="cursor-pointer">
@@ -118,11 +130,12 @@ const ProfileUserDetails = () => {
                   isOpen={isOpenFollowed}
                   onClose={onCloseFollowed}
                   followed={follow.followed.data}
+                  follow={ff}
                 />
               </div>
             </div>
             <div className="pl-5">
-              <span className="font-bold">{uu?.fullName}</span>
+              <span className="font-bold">{usernew?.fullName}</span>
               <a href="#" className="flex items-center">
                 <BsThreads />
                 threads
@@ -145,13 +158,33 @@ const ProfileUserDetails = () => {
           <div className="space-y-5">
             <div className="flex space-x-10 items-center pl-5">
               <p className="cursor-pointer">{usernew?.username}</p>
+              <Menu>
+                <MenuButton
+                  className="p-2 rounded-lg"
+                  onClick={handleFollow}
+                  sx={{ bgColor: "#0095F6" }}
+                >
+                  {isUserFollowed ? (
+                    <div className="flex justify-between items-center">
+                      <p>Following</p>
+                      <FaChevronDown />
+                    </div>
+                  ) : (
+                    "Follow"
+                  )}
+                </MenuButton>
+                  <MenuList>
+                    <MenuItem disabled sx={{ color: "gray", cursor: "not-allowed" }}>Add to favorites</MenuItem>
+                    <MenuItem disabled sx={{ color: "gray", cursor: "not-allowed" }}>Add to friends list</MenuItem>
+                    <MenuItem sx={{textColor:"red"}}>Unfollow</MenuItem>
+                  </MenuList>
+              </Menu>
               <Button
                 className="bg-[#F5F5F5] p-2 rounded-lg"
-                onClick={handleFollow}
+                onClick={() => handleCreateChat(usernew?.userId)}
               >
-                {isFollowing ? `Follow ${(<FaChevronDown />)} ` : "Follow Back"}
+                Message
               </Button>
-              <Button className="bg-[#F5F5F5] p-2 rounded-lg" onClick={() => handleCreateChat(usernew?.userId)}>Message</Button>
               <HiDotsHorizontal
                 className="font-bold text-3xl"
                 title="Options"
@@ -175,6 +208,7 @@ const ProfileUserDetails = () => {
                   isOpen={isOpen}
                   onClose={onClose}
                   follower={follow.follower.data}
+                  follow={ff}
                 />
               </div>
               <div className="cursor-pointer">
@@ -188,6 +222,7 @@ const ProfileUserDetails = () => {
                   isOpen={isOpenFollowed}
                   onClose={onCloseFollowed}
                   followed={follow.followed.data}
+                  follow={ff}
                 />
               </div>
             </div>

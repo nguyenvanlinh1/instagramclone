@@ -39,7 +39,7 @@ export const findAllChatByUserId = () => async(dispatch) => {
 
 export const addUserToGroup = (chatId, userId) => async(dispatch) => {
     try {
-        const data =await api.put(`/${chatId}/create/${userId}`);
+        const data =await api.put(`/chat/${chatId}/create/${userId}`);
         dispatch({type:UPDATE_CHAT, payload:data})
     } catch (error) {
         dispatch({type:UPDATE_INFO_FAIL, error:error.message})
@@ -48,7 +48,7 @@ export const addUserToGroup = (chatId, userId) => async(dispatch) => {
 
 export const removeUserToGroup = (chatId, userId) => async(dispatch) => {
     try {
-        const data =await api.put(`/${chatId}/delete/${userId}`);
+        const data =await api.put(`/chat/${chatId}/delete/${userId}`);
         dispatch({type:UPDATE_CHAT, payload:data})
     } catch (error) {
         dispatch({type:UPDATE_INFO_FAIL, error:error.message})
@@ -57,7 +57,7 @@ export const removeUserToGroup = (chatId, userId) => async(dispatch) => {
 
 export const deleteChat = (chatId) => async(dispatch) => {
     try {
-        const data =await api.delete(`/delete/${chatId}/`);
+        const data = await api.delete(`/chat/delete/${chatId}`);
         dispatch({type:DELETE_CHAT, payload:data})
     } catch (error) {
         dispatch({type:DELETE_INFO_FAIL, error:error.message})

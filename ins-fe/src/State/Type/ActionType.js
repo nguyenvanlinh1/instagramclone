@@ -19,6 +19,7 @@ export const SIGNOUT = "SIGNOUT"
 export const GET_INFO_FAIL = "GET_INFO_FAIL"
 export const GET_ALL_INFO_FAIL = "GET_ALL_INFO_FAIL"
 
+export const GET_MY_FOLLOWED = "GET_MY_FOLLOWED"
 export const GET_FOLLOWER = "GET_FOLLOWER"
 export const GET_FOLLOWED = "GET_FOLLOWED"
 export const GET_FOLLOWER_FAIL = "GET_FOLLOWER_FAIL"

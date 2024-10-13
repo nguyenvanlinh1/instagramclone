@@ -1,6 +1,7 @@
-import { GET_ALL_INFO_FAIL, GET_FOLLOWED, GET_FOLLOWER, GET_FOLLOWER_FAIL, UPDATE_INFO, UPDATE_INFO_FAIL } from "../Type/ActionType"
+import { GET_ALL_INFO_FAIL, GET_FOLLOWED, GET_FOLLOWER, GET_FOLLOWER_FAIL, GET_MY_FOLLOWED, UPDATE_INFO, UPDATE_INFO_FAIL } from "../Type/ActionType"
 
 const init = {
+    follow:[],
     followed:[],
     follower:[],
     notification:"",
@@ -9,6 +10,8 @@ const init = {
 
 export const followReducer = (state = init, action) => {
     switch(action.type){
+        case GET_MY_FOLLOWED:
+            return {...state, follow:action.payload}
         case GET_FOLLOWED:
             return {...state, followed:action.payload}
         case GET_FOLLOWER:
