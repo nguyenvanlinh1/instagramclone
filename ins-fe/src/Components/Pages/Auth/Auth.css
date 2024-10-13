@@ -1,0 +1,23 @@
+.mobileWallpaper{
+    background-image: url("https://cdn.tgdd.vn/Products/Images/42/329138/iphone-16-plus-xanh-thumb-600x600.jpg");
+    animation: changeBg 8s infinite;
+    background-repeat: no-repeat;
+}
+
+@keyframes changeBg {
+    0%{
+        background-image: url("https://cdn.tgdd.vn/Products/Images/42/323002/realme-c65-purple-thumb-600x600.jpg");
+    }
+    25%{
+        background-image: url("https://cdn.tgdd.vn/Products/Images/42/329143/iphone-16-pro-titan-tu-nhien.png");
+    }
+    50%{
+        background-image: url("https://cdn.tgdd.vn/Products/Images/42/321434/realme-note-50-blue-thumb-600x600.jpg");
+    }
+    75%{
+        background-color: url("https://cdn.tgdd.vn/Products/Images/42/309831/xiaomi-redmi-note-13-gold-thumb-600x600.jpg");
+    }
+    100%{
+        background-image: url("https://cdn.tgdd.vn/Products/Images/42/323002/realme-c65-purple-thumb-600x600.jpg");
+    }
+}

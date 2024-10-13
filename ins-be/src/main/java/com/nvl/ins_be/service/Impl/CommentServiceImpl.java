@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import javax.xml.stream.events.Comment;
 import java.util.List;
 import java.util.Set;
 
@@ -120,13 +121,13 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<CommentPost> getCommentByPost(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new AppException(ErrorCode.POST_NOT_EXISTED));
-        return commentPostRepository.findByPost(post);
+        return commentPostRepository.findByPostId(post.getPostId());
     }
 
     @Override
     public List<CommentStory> getCommentByStory(Long storyId) {
         Story story = storyRepository.findById(storyId).orElseThrow(() -> new AppException(ErrorCode.STORY_NOT_EXISTED));
-        return commentStoryRepository.findByStory(story);
+        return commentStoryRepository.findByStoryId(story.getStoryId());
     }
 
     @Override
@@ -142,7 +143,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void likeCommentPost(Long userId, Long commentId) {
+    public CommentPost likeCommentPost(Long userId, Long commentId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         CommentPost comment = commentPostRepository.findById(commentId).orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_EXISTED));
 
@@ -154,11 +155,11 @@ public class CommentServiceImpl implements CommentService {
             likedCommentByUser.add(user);
         }
         comment.setLikedCommentByUser(likedCommentByUser);
-        commentPostRepository.save(comment);
+        return commentPostRepository.save(comment);
     }
 
     @Override
-    public void unLikeCommentPost(Long userId, Long commentId) {
+    public CommentPost unLikeCommentPost(Long userId, Long commentId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         CommentPost comment = commentPostRepository.findById(commentId).orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_EXISTED));
         Set<User> likedCommentByUser = comment.getLikedCommentByUser();
@@ -169,11 +170,11 @@ public class CommentServiceImpl implements CommentService {
             throw new AppException(ErrorCode.USER_NOT_EXISTED);
         }
         comment.setLikedCommentByUser(likedCommentByUser);
-        commentPostRepository.save(comment);
+        return commentPostRepository.save(comment);
     }
 
     @Override
-    public void likeCommentStory(Long userId, Long commentId) {
+    public CommentStory likeCommentStory(Long userId, Long commentId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         CommentStory comment = commentStoryRepository.findById(commentId).orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_EXISTED));
 
@@ -185,11 +186,11 @@ public class CommentServiceImpl implements CommentService {
             likedCommentByUser.add(user);
         }
         comment.setLikedCommentByUser(likedCommentByUser);
-        commentStoryRepository.save(comment);
+        return commentStoryRepository.save(comment);
     }
 
     @Override
-    public void unLikeCommentStory(Long userId, Long commentId) {
+    public CommentStory unLikeCommentStory(Long userId, Long commentId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         CommentStory comment = commentStoryRepository.findById(commentId).orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_EXISTED));
         Set<User> likedCommentByUser = comment.getLikedCommentByUser();
@@ -200,6 +201,6 @@ public class CommentServiceImpl implements CommentService {
             throw new AppException(ErrorCode.USER_NOT_EXISTED);
         }
         comment.setLikedCommentByUser(likedCommentByUser);
-        commentStoryRepository.save(comment);
+        return commentStoryRepository.save(comment);
     }
 }

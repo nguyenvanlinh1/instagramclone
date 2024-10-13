@@ -1,7 +1,6 @@
 package com.nvl.ins_be.controller;
 
 import com.nvl.ins_be.dto.response.ApiResponse;
-import com.nvl.ins_be.model.Follow;
 import com.nvl.ins_be.model.User;
 import com.nvl.ins_be.service.FollowService;
 import com.nvl.ins_be.service.UserService;
@@ -20,35 +19,51 @@ public class FollowController {
     FollowService followService;
     UserService userService;
 
-    @GetMapping("/follower/{followId}")
-    ApiResponse<List<User>> getFollower(@PathVariable Long followId){
+    @GetMapping("/follower/{userId}")
+    ApiResponse<List<User>> getFollower(@PathVariable Long userId){
         User user = userService.getUser();
         return ApiResponse.<List<User>>builder()
-                .result(followService.getFollowerUsers(followId))
+                .result(followService.getFollowerUsers(userId))
                 .build();
     }
 
-    @GetMapping("/followed/{followId}")
-    ApiResponse<List<User>> getFollowed(@PathVariable Long followId){
+    @GetMapping("/follower")
+    ApiResponse<List<User>> getMyFollower(){
         User user = userService.getUser();
         return ApiResponse.<List<User>>builder()
-                .result(followService.getFollowedUsers(followId))
+                .result(followService.getFollowerUsers(user.getUserId()))
                 .build();
     }
 
-    @PutMapping("/follow/{followId}")
-    ApiResponse<Void> follow(@PathVariable Long followId){
+    @GetMapping("/followed/{userId}")
+    ApiResponse<List<User>> getFollowed(@PathVariable Long userId){
         User user = userService.getUser();
-        followService.follow(user.getUserId(), followId);
+        return ApiResponse.<List<User>>builder()
+                .result(followService.getFollowedUsers(userId))
+                .build();
+    }
+
+    @GetMapping("/followed")
+    ApiResponse<List<User>> getMyFollowed(){
+        User user = userService.getUser();
+        return ApiResponse.<List<User>>builder()
+                .result(followService.getFollowedUsers(user.getUserId()))
+                .build();
+    }
+
+    @PutMapping("/follow/{userId}")
+    ApiResponse<Void> follow(@PathVariable Long userId){
+        User user = userService.getUser();
+        followService.follow(user.getUserId(), userId);
         return ApiResponse.<Void>builder()
                 .message("Follow User Successfully")
                 .build();
     }
 
-    @PutMapping("/unfollow/{followId}")
-    ApiResponse<Void> unFollow(@PathVariable Long followId){
+    @PutMapping("/unfollow/{userId}")
+    ApiResponse<Void> unFollow(@PathVariable Long userId){
         User user = userService.getUser();
-        followService.unfollow(user.getUserId(), followId);
+        followService.unfollow(user.getUserId(), userId);
         return ApiResponse.<Void>builder()
                 .message("Unfollow User Successfully")
                 .build();

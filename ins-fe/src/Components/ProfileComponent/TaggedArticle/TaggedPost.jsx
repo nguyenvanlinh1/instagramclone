@@ -1,8 +1,15 @@
 import React from 'react'
+import TaggedCard from './TaggedCard'
 
-const TaggedPost = () => {
+const TaggedPost = ({datalike}) => {
   return (
-    <div>TaggedPost</div>
+    <div>
+      <div className="flex flex-wrap">
+        {datalike?.map((item) => (
+          <TaggedCard key={item.postId} item={item} />
+        ))}
+      </div>
+    </div>
   )
 }
 

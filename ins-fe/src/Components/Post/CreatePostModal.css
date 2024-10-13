@@ -43,13 +43,3 @@ input[type="file"]{
     resize: none;
     font-size: small;
 }
-
-.locationInput{
-    border: none;
-    outline: none;
-    width: 90%;
-}
-
-.locationInput:focus{
-    outline: none;
-}

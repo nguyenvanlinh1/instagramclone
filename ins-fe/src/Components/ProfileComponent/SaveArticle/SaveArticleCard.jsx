@@ -1,16 +1,16 @@
 import React from "react";
 
-const SaveArticleCard = () => {
+const SaveArticleCard = ({datasave}) => {
   return (
     <div>
-      <div className="">
+      <div className="h-[200%] border border-stone-300">
         <div className="relative">
-          <div className="grid grid-cols-2 border border-slate-300">
-            {[1, 2, 3].slice(0, 4).map((item, index) => (
+          <div className="grid grid-cols-2">
+            {datasave?.slice(0, 4).map((item, index) => (
               <img
                 className="cursor-pointer object-cover h-40 w-full"
                 key={index}
-                src="https://th.bing.com/th/id/OIP.6m6AZ7QHFj5JUAc6eWE6CQHaN4?w=182&h=342&c=7&r=0&o=5&dpr=1.3&pid=1.7"
+                src={item.imageList[0].imageUrl}
               ></img>
             ))}
           </div>

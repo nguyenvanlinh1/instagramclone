@@ -57,28 +57,65 @@ public class PostController {
                 .build();
     }
 
-    @GetMapping("/all")
-    ApiResponse<List<Post>> getAllPost(){
-        User user = userService.getUser();
+    @GetMapping("/{userId}")
+    ApiResponse<List<Post>> getAllPostByUserId(@PathVariable Long userId){
         return ApiResponse.<List<Post>>builder()
-                .result(postService.getAllPost())
+                .result(postService.getAllPostByUserId(userId))
                 .build();
     }
 
-    @PutMapping("/like/{postId}")
-    ApiResponse<Void> likedPost(@PathVariable Long postId){
+    @GetMapping("/saved/{userId}")
+    ApiResponse<List<Post>> getPostByUserSaved(@PathVariable Long userId){
+        return ApiResponse.<List<Post>>builder()
+                .result(postService.getAllPostByUserSaved(userId))
+                .build();
+    }
+
+    @GetMapping("/liked/{userId}")
+    ApiResponse<List<Post>> getPostByUserLiked(@PathVariable Long userId){
+        return ApiResponse.<List<Post>>builder()
+                .result(postService.getAllPostByUserLiked(userId))
+                .build();
+    }
+
+    @GetMapping("/all/{userId}")
+    ApiResponse<List<Post>> getAllPostFromUserFollow(@PathVariable Long userId){
+        return ApiResponse.<List<Post>>builder()
+                .result(postService.getAllPostFromUserFollow(userId))
+                .build();
+    }
+
+    @GetMapping("/like/{postId}/check")
+    ApiResponse<Boolean> isLikedPost(@PathVariable Long postId){
         User user = userService.getUser();
-        postService.likePost(user.getUserId(), postId);
-        return ApiResponse.<Void>builder()
+        return ApiResponse.<Boolean>builder()
+                .result(postService.isLikedPost(user.getUserId(), postId))
+                .build();
+    }
+
+    @GetMapping("/save/{postId}/check")
+    ApiResponse<Boolean> isSavedPost(@PathVariable Long postId){
+        User user = userService.getUser();
+        return ApiResponse.<Boolean>builder()
+                .result(postService.isSavedPost(user.getUserId(), postId))
+                .build();
+    }
+
+
+    @PutMapping("/like/{postId}")
+    ApiResponse<Post> likedPost(@PathVariable Long postId){
+        User user = userService.getUser();
+        return ApiResponse.<Post>builder()
+                .result(postService.likePost(user.getUserId(), postId))
                 .message("Like Post Successfully")
                 .build();
     }
 
     @PutMapping("/unlike/{postId}")
-    ApiResponse<Void> unLikedPost(@PathVariable Long postId){
+    ApiResponse<Post> unLikedPost(@PathVariable Long postId){
         User user = userService.getUser();
-        postService.unLikedPost(user.getUserId(), postId);
-        return ApiResponse.<Void>builder()
+        return ApiResponse.<Post>builder()
+                .result(postService.unLikedPost(user.getUserId(), postId))
                 .message("Unlike Post Successfully")
                 .build();
     }

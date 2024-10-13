@@ -1,26 +1,50 @@
 import {
   Button,
+  Input,
+  InputGroup,
+  InputRightAddon,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalHeader,
   ModalOverlay,
+  Select,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { FaPhotoVideo } from "react-icons/fa";
 import "./CreatePostModal.css";
 import { GrEmoji } from "react-icons/gr";
 import { FaLocationDot } from "react-icons/fa6";
+import { uploadToCloudinary } from "../../Config/UploadToCloudinary";
+import { useDispatch, useSelector } from "react-redux";
+import { createPost } from "../../State/Post/Action";
 
 const CreatePostModal = ({ isOpen, onClose }) => {
+  const dispatch = useDispatch();
+  const {user} = useSelector(store => store);
   const [file, setFile] = useState();
   const [isDragOver, setIsDragOver] = useState(false);
   const [caption, setCaption] = useState();
+  const [data, setData] = useState({
+    caption: "",
+    location: "",
+    images: [{ imageUrl: "" }],
+    status: "Public",
+  });
+
+  const handleText = (e) => {
+    const { name, value } = e.target;
+    setData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    setCaption(e.target.value)
+  };
 
   const handleDrop = (e) => {
     e.preventDefault();
-    const droppedFile = e.dataTransfer.file[0];
+    const droppedFile = e.dataTransfer.files[0];
     if (
       droppedFile.type.starsWith("image/") ||
       droppedFile.type.starsWith("video/")
@@ -38,23 +62,29 @@ const CreatePostModal = ({ isOpen, onClose }) => {
     setIsDragOver(false);
   };
 
-  const handleOnChange = (e) => {
+  const handleImage = async (e) => {
     const file = e.target.files[0];
     if (
       (file && file.type.startsWith("image/")) ||
       file.type.startsWith("video/")
     ) {
+      const url = await uploadToCloudinary(file);
+      setData((prev) => ({
+        ...prev,
+        images: prev.images.map((img, index) =>
+          index === 0 ? { ...img, imageUrl: url } : img
+        ),
+      }));
       setFile(file);
-      console.log(file);
     } else {
       setFile(null);
       alert("Please select an image");
     }
   };
 
-  const handleCaptionChange = (e) => {
-    setCaption(e.target.value);
-  };
+  const handleShare = (req) => {
+      dispatch(createPost(req));
+  } 
 
   return (
     <div>
@@ -63,10 +93,8 @@ const CreatePostModal = ({ isOpen, onClose }) => {
         <ModalContent>
           <div className="flex justify-center py-1 px-10 items-center">
             <p className="font-semibold text-xl">Create New Post</p>
-            {/* <Button variant={"ghost"} size="sm" colorScheme={"blue"}>
-              Share
-            </Button> */}
           </div>
+          <ModalCloseButton/>
           <ModalBody>
             <div className="flex justify-between pb-5 h-[70vh]">
               <div className="w-[50%] flex items-center">
@@ -91,29 +119,30 @@ const CreatePostModal = ({ isOpen, onClose }) => {
                         className="fileInput"
                         type="file"
                         id="file-upload"
+                        multiple
                         accept="image/*, video/*"
-                        onChange={handleOnChange}
+                        onChange={handleImage}
                       />
                     </div>
                   </div>
                 )}
                 {file && (
-                    <img
-                      className="max-h-full w-full"
-                      src={URL.createObjectURL(file)}
-                      alt=""
-                    />
+                  <img
+                    className="max-h-full w-full"
+                    src={URL.createObjectURL(file)}
+                    alt=""
+                  />
                 )}
               </div>
               <div className="border-2 h-full"></div>
-              <div className="w-[50%]">
+              <div className="w-[50%] space-y-5">
                 <div className="flex items-center px-2">
                   <img
                     className="w-7 h-7 rounded-full"
-                    src="https://th.bing.com/th/id/OIP.mJ1NiAi2HGhUjJU17k4VVAHaN4?w=182&h=342&c=7&r=0&o=5&dpr=1.3&pid=1.7"
+                    src={user.user.data?.result?.userImage ? user.user.data?.result?.userImage :"https://hzshop.ir/img/accountimg.png"}
                     alt=""
                   />
-                  <p className="font-semibold ml-4">username</p>
+                  <p className="font-semibold ml-4">{user.user.data?.result?.username}</p>
                 </div>
                 <div className="p-2">
                   <textarea
@@ -121,8 +150,8 @@ const CreatePostModal = ({ isOpen, onClose }) => {
                     name="caption"
                     id=""
                     rows={8}
-                    placeholder="Write a caption"
-                    onChange={handleCaptionChange}
+                    placeholder="Write a caption..."
+                    onChange={handleText}
                   ></textarea>
                 </div>
                 <div className="flex justify-between px-2">
@@ -130,14 +159,26 @@ const CreatePostModal = ({ isOpen, onClose }) => {
                   <p>{caption?.length} / 2000</p>
                 </div>
                 <hr />
-                <div className="flex items-center justify-between p-2">
-                  <input
-                    className="locationInput"
-                    type="text"
-                    placeholder="location"
-                    name="location"
-                  />
-                  <FaLocationDot />
+                <div className="px-3">
+                  <InputGroup size="md">
+                    <Input name="location" onChange={handleText} placeholder="Location..." />
+                    <InputRightAddon><FaLocationDot /></InputRightAddon>
+                  </InputGroup>
+                </div>
+                <div className="px-3">
+                  <Select
+                    name="status"
+                    onChange={handleText}
+                    value={data.status}
+                  >
+                    <option value="Public">Public</option>
+                    <option value="Private">Private</option>
+                  </Select>
+                </div>
+                <div className="flex justify-center p-5">
+                  <Button size="md" colorScheme={"blue"} onClick={() => handleShare(data)}>
+                    Share
+                  </Button>
                 </div>
               </div>
             </div>

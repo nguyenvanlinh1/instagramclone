@@ -28,6 +28,13 @@ public class UserController {
                 .build();
     }
 
+    @GetMapping("/username")
+    ApiResponse<User> findUserbyUsername(@RequestParam("username") String username){
+        return ApiResponse.<User>builder()
+                .result(userService.findUserByUsername(username))
+                .build();
+    }
+
     @PutMapping("/update")
     ApiResponse<User> updateUser(@RequestBody UserRequest userRequest){
         User user = userService.getUser();
@@ -42,4 +49,14 @@ public class UserController {
                 .result(userService.findAllUserByUsername(name))
                 .build();
     }
+
+    @GetMapping("/not_follow")
+    ApiResponse<List<User>> findUserNotFollow(){
+        User user = userService.getUser();
+        return ApiResponse.<List<User>>builder()
+                .result(userService.findUserNotFollow(user.getUserId()))
+                .build();
+    }
+
+
 }

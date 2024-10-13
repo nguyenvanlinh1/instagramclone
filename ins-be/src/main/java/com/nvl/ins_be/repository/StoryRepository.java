@@ -11,4 +11,7 @@ public interface StoryRepository extends JpaRepository<Story, Long> {
 
     @Query("Select s from Story s where s.user.userId = :userId")
     List<Story> findStoryByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT s FROM Story s JOIN s.user u WHERE u.username = :username")
+    List<Story> findStoryByUsername(@Param("username") String username);
 }

@@ -1,3 +1,6 @@
+server:
+  port: 8888
+
 spring:
   application:
     name: ins-be
@@ -14,13 +17,13 @@ spring:
       ddl-auto: update
 
 
-server:
-  port: 8888
-  servlet:
-    context-path: /api
-
-
 jwt:
   signerKey: ZnjLwNmSRIuZ1PbtYkTEbUC60gEbjucoBYT20JY2HQjJtA8hf4poYAav6NAY7uxL
+
+
+outbound:
+  client-id: "1040903330486-pjq1nditab2guhaolurvguru7b592m5o.apps.googleusercontent.com"
+  client-secret: "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"
+  redirect-uri: "http://localhost:5173/authenticate"
 
 

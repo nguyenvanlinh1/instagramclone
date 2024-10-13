@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AiOutlineHeart } from "react-icons/ai";
 import { BsBookmark, BsBookmarkFill, BsThreeDots } from "react-icons/bs";
 import { BsDot } from "react-icons/bs";
@@ -9,7 +9,6 @@ import { BsEmojiSmile } from "react-icons/bs";
 import {
   AlertDialog,
   AlertDialogBody,
-  AlertDialogCloseButton,
   AlertDialogContent,
   AlertDialogOverlay,
   Box,
@@ -17,9 +16,44 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import CommentModal from "../Comment/CommentModal";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  deletePost,
+  likePost,
+  savePost,
+  unLikePost,
+  unSavePost,
+} from "../../State/Post/Action";
+import { isCreatePost, isPostLike, isPostSave } from "../../State/Post/Logic";
+import { useNavigate } from "react-router-dom";
 
-const PostCard = () => {
+function timeDifference(pastTime) {
+  const currentTime = new Date();
+  const pastDate = new Date(pastTime);
+
+  const diffInMs = currentTime - pastDate;
+  const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  const diffInDays = Math.floor(diffInHours / 24);
+
+  if (diffInMinutes < 60) {
+    return diffInMinutes + "M"; // Nếu chênh lệch dưới 1 giờ
+  } else if (diffInHours < 24) {
+    return diffInHours + "H"; // Nếu chênh lệch dưới 24 giờ
+  } else {
+    return diffInDays + "N"; // Nếu chênh lệch trên 24 giờ
+  }
+}
+
+const PostCard = ({ item }) => {
+  const [isPostLiked, setIsPostLiked] = useState(false);
+  const [createPost, setCreatePost] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const { user} = useSelector((store) => store);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
+
   const {
     isOpen: isCommentModalOpen,
     onOpen: onCommentModalOpen,
@@ -27,17 +61,42 @@ const PostCard = () => {
   } = useDisclosure();
   const cancelRef = React.useRef();
 
-  const [isPostLiked, setIsPostLiked] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
-  const handlePostLike = () => {
+  const uuId = user.user.data?.result?.userId
+  const uu = user.user.data?.result;
+  useEffect(() => {
+    setIsPostLiked(isPostLike(item, uuId));
+    setIsSaved(isPostSave(item, uuId));
+    setCreatePost(isCreatePost(item, uuId));
+  }, [item, uu]);
+
+  const handlePostLike = async () => {
     setIsPostLiked(!isPostLiked);
+    if (isPostLiked) {
+      dispatch(unLikePost(item?.postId));
+    } else {
+      dispatch(likePost(item?.postId));
+    }
   };
+
   const handleSavePost = () => {
     setIsSaved(!isSaved);
+    if (isSaved) {
+      dispatch(unSavePost(item?.postId));
+    } else {
+      dispatch(savePost(item?.postId));
+    }
   };
+
+  const handleDeletePost = () => {
+    dispatch(deletePost(item?.postId));
+  }
 
   const handleOpenCommentModal = () => {
     onCommentModalOpen();
+  };
+
+  const handleProfile = (username) => {
+    navigate(`/${username}`)
   }
 
   return (
@@ -46,16 +105,23 @@ const PostCard = () => {
         <div className="flex justify-between items-center w-full py-4 px-5">
           <div className="flex items-center p-2">
             <img
-              className="h-10 w-10 rounded-full"
-              src="https://th.bing.com/th/id/OIP.6m6AZ7QHFj5JUAc6eWE6CQHaN4?w=182&h=342&c=7&r=0&o=5&dpr=1.3&pid=1.7"
+              className="h-10 w-10 rounded-full cursor-pointer"
+              src={
+                item?.user.userImage
+                  ? item?.user.userImage
+                  : "https://hzshop.ir/img/accountimg.png"
+              }
+              onClick={() => handleProfile(item?.user.username)}
             ></img>
             <div className="pl-2">
               <p className="text-sm flex items-center">
-                <span className="font-semibold">username</span>
+                <span className="font-semibold">{item?.user.username}</span>
                 <BsDot />
-                <span className="font-thin">9m</span>
+                <span className="font-thin">
+                  {timeDifference(item?.createAt)}
+                </span>
               </p>
-              <p className="font-thin text-sm">location</p>
+              <p className="font-thin text-sm">{item?.location}</p>
             </div>
           </div>
           <div>
@@ -72,13 +138,23 @@ const PostCard = () => {
               <AlertDialogOverlay />
               <AlertDialogContent>
                 <AlertDialogBody>
-                  <Box
-                    sx={{ display: "flex", flexDirection: "column", gap: 2 }}
-                  >
-                    <Button sx={{ color: "red" }}>Delete</Button>
-                    <Button>Update</Button>
-                    <Button onClick={onClose}>Cancel</Button>
-                  </Box>
+                  {createPost ? (
+                    <Box
+                      sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+                    >
+                      <Button sx={{ color: "red" }} onClick={handleDeletePost}>Delete</Button>
+                      <Button>Update</Button>
+                      <Button onClick={onClose}>Cancel</Button>
+                    </Box>
+                  ) : (
+                    <Box
+                      sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+                    >
+                      <Button sx={{ color: "red" }}>Repost</Button>
+                      <Button sx={{ color: "red" }}>Unfollow</Button>
+                      <Button onClick={onClose}>Add to favorites</Button>
+                    </Box>
+                  )}
                 </AlertDialogBody>
               </AlertDialogContent>
             </AlertDialog>
@@ -88,7 +164,7 @@ const PostCard = () => {
         <div className="w-full">
           <img
             className="w-[468px] h-[585px] mx-auto"
-            src="https://th.bing.com/th/id/OIP.6m6AZ7QHFj5JUAc6eWE6CQHaN4?w=182&h=342&c=7&r=0&o=5&dpr=1.3&pid=1.7"
+            src={item?.imageList[0].imageUrl}
           ></img>
         </div>
 
@@ -102,7 +178,10 @@ const PostCard = () => {
             ) : (
               <AiOutlineHeart className="text-2xl" onClick={handlePostLike} />
             )}
-            <FaRegComment onClick={handleOpenCommentModal} className="text-2xl hover:opacity-50 cursor-pointer" />
+            <FaRegComment
+              onClick={handleOpenCommentModal}
+              className="text-2xl hover:opacity-50 cursor-pointer"
+            />
             <RiSendPlaneLine className="text-2xl hover:opacity-50 cursor-pointer" />
           </div>
           <div className="cursor-pointer">
@@ -118,12 +197,11 @@ const PostCard = () => {
         </div>
 
         <div className="w-full py-2 px-5">
-          <p>10 likes</p>
-          <p>
-            leomessi !! First goal accomplished ✅ Very proud of this team, we
-            move forward with the desire to achieve more things together!!
+          <p>{item?.likedByUsers.length} likes</p>
+          <p>{item?.caption}</p>
+          <p className="opacity-50 py-2 cursor-pointer" onClick={handleOpenCommentModal}>
+            view all {item?.comments.length} comments
           </p>
-          <p className="opacity-50 py-2 cursor-pointer">view all 10 comments</p>
         </div>
 
         <div>
@@ -144,6 +222,8 @@ const PostCard = () => {
         handleSavePost={handleSavePost}
         isPostLiked={isPostLiked}
         isSaved={isSaved}
+        item={item}
+        key={item.postId}
       />
     </div>
   );

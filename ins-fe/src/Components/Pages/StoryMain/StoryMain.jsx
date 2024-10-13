@@ -1,24 +1,26 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import StoryViewer from "../../Story/StoryViewer";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { getAllStoryByUsername } from "../../../State/Story/Action";
 
 const StoryMain = () => {
-  const story = [
-    {
-      image:
-        "https://th.bing.com/th/id/OIP.mJ1NiAi2HGhUjJU17k4VVAHaN4?w=182&h=342&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-    {
-      image:
-        "https://th.bing.com/th/id/OIP.m6qTNQCrpa7YR03CCqWq9gHaJ4?w=206&h=275&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-    {
-      image:
-        "https://th.bing.com/th/id/OIP.6m6AZ7QHFj5JUAc6eWE6CQHaN4?w=182&h=342&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-  ];
+  const {story} = useSelector(store => store);
+  const param = useParams();
+  const dispatch = useDispatch();
+  const [storyViewerKey, setStoryViewerKey] = useState(0);
+
+  useEffect(() => {
+    dispatch(getAllStoryByUsername(param.username))
+  },[param.username, storyViewerKey, story.story])
+
+  const handleStoryChange = () => {
+    setStoryViewerKey((prev) => prev + 1);
+  };
+
   return (
     <div>
-      <StoryViewer stories={story} />
+      <StoryViewer storyItem={story.stories.data?.result} onStoryChange={handleStoryChange}/>
     </div>
   );
 };

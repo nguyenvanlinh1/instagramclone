@@ -1,0 +1,71 @@
+export const GET_USER = "GET_USER"
+export const GET_USERNAME = "GET_USERNAME"
+export const UPDATE_USER = "UPDATE_USER"
+export const DELETE_USER = "DELETE_USER"
+export const FIND_USER = "FIND_USER"
+
+
+export const GET_INFO = "GET_INFO"
+export const GET_ALL_INFO = "GET_ALL_INFO"
+export const CREATE_INFO = "CREATE_INFO"
+export const UPDATE_INFO = "UPDATE_INFO"
+export const DELETE_INFO = "DELETE_INFO"
+export const FIND_INFO = "FIND_INFO"
+
+export const SIGNIN = "SIGNIN"
+export const SIGNUP = "SIGNUP"
+export const SIGNOUT = "SIGNOUT"
+
+export const GET_INFO_FAIL = "GET_INFO_FAIL"
+export const GET_ALL_INFO_FAIL = "GET_ALL_INFO_FAIL"
+
+export const GET_FOLLOWER = "GET_FOLLOWER"
+export const GET_FOLLOWED = "GET_FOLLOWED"
+export const GET_FOLLOWER_FAIL = "GET_FOLLOWER_FAIL"
+
+export const CREATE_INFO_FAIL = "CREATE_INFO_FAIL"
+export const UPDATE_INFO_FAIL = "UPDATE_INFO_FAIL"
+export const DELETE_INFO_FAIL = "DELETE_INFO_FAIL"
+export const FIND_INFO_FAIL = "FIND_INFO_FAIL"
+
+export const GET_POST = "GET_POST"
+export const GET_POST_LIKED = "GET_POST_LIKED"
+export const GET_POST_SAVED = "GET_POST_SAVED"
+export const CREATE_POST = "CREATE_POST"
+export const UPDATE_POST = "UPDATE_POST"
+export const DELETE_POST = "DELETE_POST"
+
+export const GET_STORY = "GET_STORY"
+export const CREATE_STORY = "CREATE_STORY"
+export const UPDATE_STORY = "UPDATE_STORY"
+export const DELETE_STORY = "DELETE_STORY"
+
+export const GET_COMMENT_POST = "GET_COMMENT_POST"
+export const CREATE_COMMENT_POST = "CREATE_COMMENT_POST"
+export const CREATE_COMMENT_POST_REPLAY = "CREATE_COMMENT_POST_REPLAY"
+export const UPDATE_COMMENT_POST = "UPDATE_COMMENT_POST"
+export const DELETE_COMMENT_POST = "DELETE_COMMENT_POST"
+
+export const GET_COMMENT_STORY = "GET_COMMENT_STORY"
+export const CREATE_COMMENT_STORY = "CREATE_COMMENT_STORY"
+export const UPDATE_COMMENT_STORY = "UPDATE_COMMENT_STORY"
+export const DELETE_COMMENT_STORY = "DELETE_COMMENT_STORY"
+
+
+export const SIGNIN_FAIL = "SIGNIN_FAIL"
+export const SIGNUP_FAIL = "SIGNUP_FAIL"
+export const SIGNOUT_FAIL = "SIGNOUT_FAIL"
+
+export const GET_USER_NOT_FOLLOW = "GET_USER_NOT_FOLLOW"
+export const GET_USER_BY_NAME = "GET_USER_BY_NAME"
+
+
+export const GET_CHAT = "GET_CHAT"
+export const GET_MESSAGES = "GET_MESSAGES"
+export const CREATE_CHAT = "CREATE_CHAT"
+export const CREATE_MESSAGE = "CREATE_MESSAGE"
+export const FIND_CHAT = "FIND_CHAT"
+export const UPDATE_CHAT = "UPDATE_CHAT"
+export const DELETE_CHAT = "DELETE_CHAT"
+export const DELETE_MESSAGE = "DELETE_MESSAGE"
+

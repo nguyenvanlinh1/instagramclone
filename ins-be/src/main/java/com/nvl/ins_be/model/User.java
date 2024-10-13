@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Entity
@@ -49,20 +50,28 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
-    Set<Post> posts;
+    Set<Post> posts = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
-    Set<CommentPost> comments;
+    Set<Story> stories = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    Set<CommentPost> comments = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    Set<CommentStory> commentStories = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    Set<Follow> followers;
+    Set<Follow> followers = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "followed", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    Set<Follow> followings;
+    Set<Follow> followings = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    Set<Message> sentMessage;
+    Set<Message> sentMessage = new LinkedHashSet<>();
 
     @Column(name = "create_at")
     @CreationTimestamp

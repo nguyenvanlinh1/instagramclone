@@ -16,7 +16,7 @@ import java.util.*;
 @Setter
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "comment")
+@Table(name = "comment_post")
 public class CommentPost {
 
     @Id
@@ -34,7 +34,6 @@ public class CommentPost {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonIgnore
     private User user;
 
     @ManyToOne

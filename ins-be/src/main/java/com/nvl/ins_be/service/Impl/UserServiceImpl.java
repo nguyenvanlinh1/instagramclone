@@ -72,4 +72,15 @@ public class UserServiceImpl implements UserService {
         }
         return users;
     }
+
+    @Override
+    public List<User> findUserNotFollow(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        return userRepository.findUserByNotFollow(userId);
+    }
+
+    @Override
+    public User findUserByUsername(String username) {
+        return userRepository.findUserByUsername(username);
+    }
 }

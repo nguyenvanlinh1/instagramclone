@@ -9,15 +9,18 @@ import com.nvl.ins_be.model.Post;
 import com.nvl.ins_be.model.User;
 import com.nvl.ins_be.repository.PostRepository;
 import com.nvl.ins_be.repository.UserRepository;
+import com.nvl.ins_be.service.FollowService;
 import com.nvl.ins_be.service.PostService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +29,7 @@ public class PostServiceImpl implements PostService {
 
     PostRepository postRepository;
     UserRepository userRepository;
+    FollowService followService;
 
     @Override
     public Post createPost(User user, PostRequest request) {
@@ -35,7 +39,7 @@ public class PostServiceImpl implements PostService {
         post.setStatus(request.getStatus());
         post.setUser(user);
 
-        Set<ImagePost> images = new LinkedHashSet<>();
+        List<ImagePost> images = new ArrayList<>();
         for (ImageRequest imageRequest : request.getImages()){
             ImagePost newImage = new ImagePost();
             newImage.setImageUrl(imageRequest.getImageUrl());
@@ -49,8 +53,26 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public boolean isSavedPost(Long userId, Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new AppException(ErrorCode.POST_NOT_EXISTED));
+        for(User user : post.getSavedByUsers()){
+            if(user.getUserId().equals(userId)) return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isLikedPost(Long userId, Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new AppException(ErrorCode.POST_NOT_EXISTED));
+        for(User user : post.getLikedByUsers()){
+            if(user.getUserId().equals(userId)) return true;
+        }
+        return false;
+    }
+
+    @Override
     public Post updatePost(PostRequest request, Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new AppException(ErrorCode.POST_EXISTED));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new AppException(ErrorCode.POST_NOT_EXISTED));
         post.setCaption(request.getCaption());
         post.setLocation(request.getLocation());
         post.setStatus(request.getStatus());
@@ -76,6 +98,30 @@ public class PostServiceImpl implements PostService {
         boolean isUser = userRepository.existsById(userId);
         if(!isUser) throw new AppException(ErrorCode.USER_NOT_EXISTED);
         return postRepository.findPostByUserId(userId);
+    }
+
+    @Override
+    public List<Post> getAllPostFromUserFollow(Long userId) {
+        List<User> users = followService.getFollowedUsers(userId);
+        List<Post> myPost = postRepository.findPostByUserId(userId);
+        List<Post> allPosts = new ArrayList<>(myPost);
+        for(User user : users){
+            List<Post> posts = postRepository.findPostByUserId(user.getUserId());
+            allPosts.addAll(posts);
+        }
+        return allPosts;
+    }
+
+    @Override
+    public List<Post> getAllPostByUserSaved(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        return postRepository.findAllByUserSaved(user.getUserId());
+    }
+
+    @Override
+    public List<Post> getAllPostByUserLiked(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        return postRepository.findAllByUserLiked(user.getUserId());
     }
 
     @Override
@@ -108,23 +154,23 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void likePost(Long userId, Long postId) {
+    public Post likePost(Long userId, Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new AppException(ErrorCode.POST_NOT_EXISTED));
         Set<User> userLiked = post.getLikedByUsers();
         User userLikePost = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         userLiked.add(userLikePost);
         post.setLikedByUsers(userLiked);
-        postRepository.save(post);
+        return postRepository.save(post);
     }
 
     @Override
-    public void unLikedPost(Long userId, Long postId) {
+    public Post unLikedPost(Long userId, Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new AppException(ErrorCode.POST_NOT_EXISTED));
         Set<User> userLiked = post.getLikedByUsers();
         User userUnLiked = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         userLiked.remove(userUnLiked);
         post.setLikedByUsers(userLiked);
-        postRepository.save(post);
+        return postRepository.save(post);
     }
 
     @Override

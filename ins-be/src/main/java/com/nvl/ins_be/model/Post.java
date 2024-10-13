@@ -29,7 +29,7 @@ public class Post {
     String caption;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    Set<ImagePost> imageList = new LinkedHashSet<>();
+    List<ImagePost> imageList = new ArrayList<>();
 
     @Column(name = "location")
     String location;
@@ -44,7 +44,6 @@ public class Post {
 //    })
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonIgnore
     User user;
 
 //    @Embedded
@@ -69,7 +68,7 @@ public class Post {
     Set<User> likedByUsers;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    Set<CommentPost> comments;
+    Set<CommentPost> comments = new LinkedHashSet<>();
 
     @Column(name = "create_at")
     @CreationTimestamp

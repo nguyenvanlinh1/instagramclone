@@ -45,15 +45,15 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
-    public List<User> getFollowedUsers(Long followId) {
-        User user = userRepository.findById(followId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+    public List<User> getFollowedUsers(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         List<Follow> follows = followRepository.findByFollower(user);
         return follows.stream().map(Follow::getFollowed).collect(Collectors.toList());
     }
 
     @Override
-    public List<User> getFollowerUsers(Long followId) {
-        User user = userRepository.findById(followId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+    public List<User> getFollowerUsers(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         List<Follow> follows = followRepository.findByFollowed(user);
         return follows.stream().map(Follow::getFollower).collect(Collectors.toList());
     }

@@ -4,6 +4,7 @@ import com.nvl.ins_be.dto.request.CommentRequest;
 import com.nvl.ins_be.model.CommentPost;
 import com.nvl.ins_be.model.CommentStory;
 
+import javax.xml.stream.events.Comment;
 import java.util.List;
 
 public interface CommentService {
@@ -25,9 +26,9 @@ public interface CommentService {
     List<CommentPost> getCommentPostByCommentReplay(Long commentId);
     List<CommentStory> getCommentStoryByCommentReplay(Long commentId);
 
-    void likeCommentPost(Long userId, Long commentId);
-    void unLikeCommentPost(Long userId, Long commentId);
+    CommentPost likeCommentPost(Long userId, Long commentId);
+    CommentPost unLikeCommentPost(Long userId, Long commentId);
 
-    void likeCommentStory(Long userId, Long commentId);
-    void unLikeCommentStory(Long userId, Long commentId);
+    CommentStory likeCommentStory(Long userId, Long commentId);
+    CommentStory unLikeCommentStory(Long userId, Long commentId);
 }

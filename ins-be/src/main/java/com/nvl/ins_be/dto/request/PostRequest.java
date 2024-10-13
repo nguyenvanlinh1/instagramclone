@@ -3,7 +3,9 @@ package com.nvl.ins_be.dto.request;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -14,7 +16,7 @@ public class PostRequest {
 
     String caption;
     String location;
-    Set<ImageRequest> images;
+    List<ImageRequest> images = new ArrayList<>();
     String status;
 
 }
