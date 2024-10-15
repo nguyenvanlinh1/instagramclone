@@ -11,7 +11,8 @@ const Signin = () => {
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
-  const { user } = useSelector((store) => store);
+  const {auth, user } = useSelector((store) => store);
+  const accessToken = localStorage.getItem("accessToken");
 
   const [data, setData] = useState({
     email: "",
@@ -26,11 +27,12 @@ const Signin = () => {
     }));
   };
 
-  const handleSignin = () => {
+  const handleSignin = (e) => {
+    e.preventDefault();
     dispatch(signin(data));
     setTimeout(() => {
       navigate("/");
-    }, 3000);
+    }, 2000);
   };
 
   const handleContinueWithGoogle = () => {
@@ -42,17 +44,18 @@ const Signin = () => {
       callbackUri
     )}&response_type=code&client_id=${clientId}&scope=openid%20email%20profile`;
 
-    console.log(targetUrl);
-
     window.location.href = targetUrl;
   };
 
-  useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
-    if (accessToken) {
-      navigate("/");
-    }
-  }, [navigate]);
+  console.log("Token:", auth);
+  console.log("User", user)
+  console.log("Access", accessToken)
+
+  // useEffect(() => {
+  //   if (accessToken) {
+  //     navigate("/");
+  //   }
+  // }, [navigate]);
 
   return (
     <div>

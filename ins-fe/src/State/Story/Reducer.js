@@ -13,13 +13,15 @@ const init = {
   stories: [],
   story: "",
   error: "",
+  notification:""
 };
 
 export const storyReducer = (state = init, action) => {
   switch (action.type) {
     case GET_STORY:
-    case DELETE_STORY:
       return { ...state, stories: action.payload };
+    case DELETE_STORY:
+      return { ...state, notification: action.payload };
     case CREATE_STORY:
     case UPDATE_STORY:
       return { ...state, story: action.payload };

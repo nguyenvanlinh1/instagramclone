@@ -15,7 +15,9 @@ const init = {
   posts: [],
   post: "",
   error: "",
-  notification:""
+  notification:"",
+  postLiked:[],
+  postSaved:[],
 };
 
 export const postReducer = (state = init, action) => {
@@ -25,9 +27,9 @@ export const postReducer = (state = init, action) => {
     case DELETE_POST:
       return { ...state, notification: action.payload };
     case GET_POST_LIKED:
-      return { ...state, postLiked: action.payload };
+      return { ...state, postLiked: action.payload};
     case GET_POST_SAVED:
-      return { ...state, postSaved: action.payload };
+      return { ...state, postSaved: action.payload};
     case UPDATE_POST:
       return {
         ...state,

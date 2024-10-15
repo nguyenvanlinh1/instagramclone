@@ -25,6 +25,7 @@ const HomePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { auth, user, post, follow, comment } = useSelector((store) => store);
+  const token = localStorage.getItem("accessToken");
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
@@ -33,30 +34,19 @@ const HomePage = () => {
     onClose: onCreateClose,
   } = useDisclosure();
 
-  const token = localStorage.getItem("accessToken");
-  console.log(token)
-
   useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
-    if(!accessToken){
-      navigate("/login")
+    if (!token) {
+      navigate("/login");
     }
-    dispatch(getUser());
-  }, [navigate]);
-
-  const uu = user.user.data?.result;
+    else {dispatch(getUser(token))};
+  }, [auth]);
 
   useEffect(() => {
-    dispatch(getMyFollowed());
-    dispatch(findUserNotFollow());
-  }, [follow.notification]);
-
-  useEffect(() => {
-    if (uu) {
-      dispatch(getAllPostFromUserFollowed(uu?.userId));
+    if(user.user){
+      dispatch(getAllPostFromUserFollowed(user.user.data?.result?.userId));
     }
   }, [
-    uu?.userId,
+    user.user,
     comment.notification,
     comment.comment,
     post.notification,
@@ -66,14 +56,17 @@ const HomePage = () => {
     follow.notification,
   ]);
 
-  const pp = post.posts.data?.result;
-  const ff = follow.followed.data?.result;
-  const unf = user?.users?.data?.result;
+  useEffect(() => {
+    dispatch(getMyFollowed(token));
+    dispatch(findUserNotFollow());
+  }, [follow.notification]);
 
   const handleWatchStory = () => {
-    navigate(`/story/${uu?.username}`);
+    navigate(`/story/${user.user.data?.result?.username}`);
   };
 
+  console.log("Follow:", follow);
+  console.log("User", user)
 
   return (
     <div>
@@ -87,8 +80,8 @@ const HomePage = () => {
               <img
                 className="w-16 h-16 rounded-full"
                 src={
-                  uu?.userImage
-                    ? uu?.userImage
+                  user.user.data?.result?.userImage
+                    ? user.user.data?.result?.userImage
                     : "https://hzshop.ir/img/accountimg.png"
                 }
               ></img>
@@ -124,20 +117,27 @@ const HomePage = () => {
                   </ModalBody>
                 </ModalContent>
               </Modal>
-              <p className="text-sm font-bold text-red-500">{uu?.username}</p>
+              <p className="text-sm font-bold text-red-500">
+                {user.user.data?.result?.username}
+              </p>
             </div>
-            {ff?.map((item) => (
-              <StoryCircle key={item.userId} item={item} />
-            ))}
+            {follow.follow &&
+              follow.follow.data?.result?.map((item) => (
+                <StoryCircle key={item.userId} item={item} />
+              ))}
           </div>
           <div className="space-y-5 w-full mt-10">
-            {pp?.map((item) => (
-              <PostCard key={item.postId} item={item} />
-            ))}
+            {post.posts &&
+              post.posts.data?.result?.map((item) => (
+                <PostCard key={item.postId} item={item} />
+              ))}
           </div>
         </div>
         <div className="w-[45%] px-20">
-          <HomeRight user={uu} unf={unf} />
+          <HomeRight
+            user={user.user.data?.result}
+            unf={user.users && user.users?.data?.result}
+          />
         </div>
       </div>
     </div>

@@ -40,6 +40,7 @@ export const getAllStoryFromUserFollowed = (userId) => async(dispatch) =>{
 
 export const getAllStoryByUsername = (username) => async(dispatch) =>{
     try {
+        console.log(username)
         const data = await api.get(`/story/username?username=${username}`);
         dispatch({type:GET_STORY, payload:data})
     } catch (error) {

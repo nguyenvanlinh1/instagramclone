@@ -28,11 +28,14 @@ const Signup = () => {
     }));
   };
 
-  const handleSignup = () => {
+  const handleSignup = (e) => {
+    e.preventDefault();
     dispatch(signup(data));
-    navigate("/home")
-}
-console.log(data)
+    setTimeout(() => {
+      navigate("/");
+    }, 2000);
+  };
+  console.log(data);
   return (
     <div className="flex justify-center items-center h-[100vh]">
       <div className="">

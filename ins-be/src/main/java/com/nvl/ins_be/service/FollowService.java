@@ -9,9 +9,9 @@ public interface FollowService {
     void follow(Long follower, Long followed);
     void unfollow(Long userId, Long followed);
 
-    //danh sach user theo doi
+    //danh sach user dang theo doi
     List<User> getFollowedUsers(Long userId);
 
-    //danh sach theo doi user
+    //danh sach dang theo doi user
     List<User> getFollowerUsers(Long userId);
 }

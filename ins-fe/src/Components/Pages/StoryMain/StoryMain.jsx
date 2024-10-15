@@ -1,26 +1,26 @@
 import React, { useEffect, useState } from "react";
 import StoryViewer from "../../Story/StoryViewer";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { getAllStoryByUsername } from "../../../State/Story/Action";
 
 const StoryMain = () => {
-  const {story} = useSelector(store => store);
-  const param = useParams();
+  const { story } = useSelector((store) => store);
+  const location = useLocation();
+  const { username } = useParams();
   const dispatch = useDispatch();
-  const [storyViewerKey, setStoryViewerKey] = useState(0);
 
   useEffect(() => {
-    dispatch(getAllStoryByUsername(param.username))
-  },[param.username, storyViewerKey, story.story])
-
-  const handleStoryChange = () => {
-    setStoryViewerKey((prev) => prev + 1);
-  };
+    if (username) {
+      dispatch(getAllStoryByUsername(username));
+    } else {
+      console.log("No username found in params");
+    }
+  }, [location, username, story.story]);
 
   return (
     <div>
-      <StoryViewer storyItem={story.stories.data?.result} onStoryChange={handleStoryChange}/>
+      <StoryViewer stories={story.stories.data?.result} />
     </div>
   );
 };
