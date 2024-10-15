@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { checkFollowed } from "../../../State/Follow/Logic";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Button } from "@chakra-ui/react";
 
 const FollowerCard = ({item, follow}) => {
     const { user } = useSelector((store) => store);
     const [isFollowed, setIsFollowed] = useState();
+    const dispatch = useDispatch();
 
     useEffect(() => {
         if(follow){
             setIsFollowed(checkFollowed(item?.userId, follow))
         }
     },[])
+
+    const handleFollow = () => {
+    }
   return (
     <div>
       <div className="flex justify-between items-center mt-5">
@@ -35,7 +39,7 @@ const FollowerCard = ({item, follow}) => {
         {user.user.data?.result?.userId === item.userId ? (
           ""
         ) : (
-          <Button backgroundColor="white" textColor="blue.400">
+          <Button backgroundColor="white" textColor="blue.400" onClick={handleFollow}>
             {isFollowed ? "Unfollow" : "Follow"}
           </Button>
         )}

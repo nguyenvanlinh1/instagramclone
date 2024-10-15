@@ -150,7 +150,7 @@ const PostCard = ({ item }) => {
                     <Box
                       sx={{ display: "flex", flexDirection: "column", gap: 2 }}
                     >
-                      <Button sx={{ color: "red" }}>Repost</Button>
+                      <Button sx={{ color: "red" }}>Report</Button>
                       <Button sx={{ color: "red" }}>Unfollow</Button>
                       <Button onClick={onClose}>Add to favorites</Button>
                     </Box>

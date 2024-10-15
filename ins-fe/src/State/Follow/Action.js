@@ -37,14 +37,9 @@ export const getMyFollower = () => async (dispatch) => {
   }
 };
 
-export const getMyFollowed = (token) => async (dispatch) => {
+export const getMyFollowed = () => async (dispatch) => {
   try {
-    const data = await axios.get(`http://localhost:8888/followed`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const data = await api.get(`/followed`)
     dispatch({ type: GET_MY_FOLLOWED, payload: data });
   } catch (error) {
     dispatch({ type: GET_ALL_INFO_FAIL, error: error.message });

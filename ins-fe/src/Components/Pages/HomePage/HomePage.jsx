@@ -54,19 +54,18 @@ const HomePage = () => {
     comment.updateComment,
     comment.commentReplay,
     follow.notification,
+    post.post,
   ]);
 
+
   useEffect(() => {
-    dispatch(getMyFollowed(token));
+    dispatch(getMyFollowed());
     dispatch(findUserNotFollow());
-  }, [follow.notification]);
+  }, [follow.notification, user.user]);
 
   const handleWatchStory = () => {
     navigate(`/story/${user.user.data?.result?.username}`);
   };
-
-  console.log("Follow:", follow);
-  console.log("User", user)
 
   return (
     <div>
@@ -136,7 +135,7 @@ const HomePage = () => {
         <div className="w-[45%] px-20">
           <HomeRight
             user={user.user.data?.result}
-            unf={user.users && user.users?.data?.result}
+            unf={user.usernotfollow?.data?.result}
           />
         </div>
       </div>

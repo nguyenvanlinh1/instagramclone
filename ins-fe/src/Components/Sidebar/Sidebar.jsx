@@ -3,6 +3,7 @@ import { IoReorderThreeOutline } from "react-icons/io5";
 import { mainSide } from "./SidebarConfig";
 import { useNavigate } from "react-router-dom";
 import CreatePostModal from "../Post/CreatePostModal";
+import "./Sidebar.css"
 import {
   Menu,
   MenuButton,
@@ -75,8 +76,9 @@ const Sidebar = () => {
       navigate("/message");
       setIsSiderbar(true);
       setIsSearchVisible(false);
+    
     } else {
-      setIsSearchVisible(false);
+      setIsSearchVisible(true);
       setIsSiderbar(false);
       navigate("/");
     }
@@ -86,7 +88,7 @@ const Sidebar = () => {
     dispatch(logout());
     setTimeout(() => {
       navigate("/login");
-    }, 1000)
+    }, 1000);
   };
 
   return (
@@ -101,16 +103,28 @@ const Sidebar = () => {
               <FaInstagram className="text-4xl" />
             </div>
             <div className="mt-10">
-              {mainSide.map((item, index) => (
-                <div
-                  className="flex items-center cursor-pointer text-3xl mb-5"
-                  key={index}
-                  onClick={() => handleTabClick(item.title)}
-                >
-                  {activeTab === item.title ? item.activeIcon : item.icon}
-                </div>
-              ))}
+              {mainSide.map((item, index) => {
+                const isDisabled =
+                  item.title === "Explore" || item.title === "Notification";
+                return (
+                  <div
+                    key={index}
+                    className={`flex items-center text-3xl mb-5 ${
+                      isDisabled
+                        ? "cursor-not-allowed text-gray-400"
+                        : "cursor-pointer"
+                    }`}
+                    onClick={() => !isDisabled && handleTabClick(item.title)}
+                    style={
+                      isDisabled ? { color: "gray", cursor: "not-allowed" } : {}
+                    }
+                  >
+                    {activeTab === item.title ? item.activeIcon : item.icon}
+                  </div>
+                );
+              })}
             </div>
+
             <Menu>
               <MenuButton colorScheme="pink">
                 <div className="flex items-center cursor-pointer pb-10 font-semibold">
@@ -118,22 +132,57 @@ const Sidebar = () => {
                 </div>
               </MenuButton>
               <MenuList>
-                <MenuItem>Settings</MenuItem>
-                <MenuItem>Your Activity</MenuItem>
-                <MenuItem>Saved</MenuItem>
-                <MenuItem>Switch Appearence</MenuItem>
-                <MenuItem>Report a problem</MenuItem>
+                <MenuItem
+                  disabled
+                  sx={{ color: "gray", cursor: "not-allowed" }}
+                >
+                  Settings
+                </MenuItem>
+                <MenuItem
+                  disabled
+                  sx={{ color: "gray", cursor: "not-allowed" }}
+                >
+                  Your Activity
+                </MenuItem>
+                <MenuItem
+                  disabled
+                  sx={{ color: "gray", cursor: "not-allowed" }}
+                >
+                  Saved
+                </MenuItem>
+                <MenuItem
+                  disabled
+                  sx={{ color: "gray", cursor: "not-allowed" }}
+                >
+                  Switch Appearence
+                </MenuItem>
+                <MenuItem
+                  disabled
+                  sx={{ color: "gray", cursor: "not-allowed" }}
+                >
+                  Report a problem
+                </MenuItem>
                 <MenuDivider />
-                <MenuItem>Threads</MenuItem>
+                <MenuItem
+                  disabled
+                  sx={{ color: "gray", cursor: "not-allowed" }}
+                >
+                  Threads
+                </MenuItem>
                 <MenuDivider />
-                <MenuItem>Switch Account</MenuItem>
+                <MenuItem
+                  disabled
+                  sx={{ color: "gray", cursor: "not-allowed" }}
+                >
+                  Switch Account
+                </MenuItem>
                 <MenuDivider />
                 <MenuItem onClick={handleClick}>Logout</MenuItem>
               </MenuList>
             </Menu>
           </div>
           {isSearchVisible ? (
-            <div className="flex z-10">
+            <div className="flex z-10 slide-in">
               <Search />
             </div>
           ) : (
@@ -149,22 +198,30 @@ const Sidebar = () => {
             ></img>
           </div>
           <div className="mt-10">
-            {mainSide.map((item, index) => (
-              <div
-                className="flex items-center mb-5 cursor-pointer text-3xl"
-                key={index}
-                onClick={() => handleTabClick(item.title)}
-              >
-                {activeTab === item.title ? item.activeIcon : item.icon}
-                <p
-                  className={`ml-3 text-lg ${
-                    activeTab === item.title ? "font-bold" : "font-semibold"
+            {mainSide.map((item, index) => {
+              const isDisabled =
+                item.title === "Explore" || item.title === "Notification";
+              return (
+                <div
+                  className={`flex items-center text-3xl mb-5 ${
+                    isDisabled
+                      ? "cursor-not-allowed text-gray-400"
+                      : "cursor-pointer"
                   }`}
+                  key={index}
+                  onClick={() => handleTabClick(item.title)}
                 >
-                  {item.title}
-                </p>
-              </div>
-            ))}
+                  {activeTab === item.title ? item.activeIcon : item.icon}
+                  <p
+                    className={`ml-3 text-lg ${
+                      activeTab === item.title ? "font-bold" : "font-semibold"
+                    }`}
+                  >
+                    {item.title}
+                  </p>
+                </div>
+              );
+            })}
           </div>
           <Menu>
             <MenuButton colorScheme="pink">
@@ -173,15 +230,29 @@ const Sidebar = () => {
               </div>
             </MenuButton>
             <MenuList>
-              <MenuItem>Settings</MenuItem>
-              <MenuItem>Your Activity</MenuItem>
-              <MenuItem>Saved</MenuItem>
-              <MenuItem>Switch Appearence</MenuItem>
-              <MenuItem>Report a problem</MenuItem>
+              <MenuItem disabled sx={{ color: "gray", cursor: "not-allowed" }}>
+                Settings
+              </MenuItem>
+              <MenuItem disabled sx={{ color: "gray", cursor: "not-allowed" }}>
+                Your Activity
+              </MenuItem>
+              <MenuItem disabled sx={{ color: "gray", cursor: "not-allowed" }}>
+                Saved
+              </MenuItem>
+              <MenuItem disabled sx={{ color: "gray", cursor: "not-allowed" }}>
+                Switch Appearence
+              </MenuItem>
+              <MenuItem disabled sx={{ color: "gray", cursor: "not-allowed" }}>
+                Report a problem
+              </MenuItem>
               <MenuDivider />
-              <MenuItem>Threads</MenuItem>
+              <MenuItem disabled sx={{ color: "gray", cursor: "not-allowed" }}>
+                Threads
+              </MenuItem>
               <MenuDivider />
-              <MenuItem>Switch Account</MenuItem>
+              <MenuItem disabled sx={{ color: "gray", cursor: "not-allowed" }}>
+                Switch Account
+              </MenuItem>
               <MenuDivider />
               <MenuItem onClick={handleClick}>Logout</MenuItem>
             </MenuList>

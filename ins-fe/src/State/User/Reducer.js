@@ -4,7 +4,8 @@ const init = {
     users:[],
     user:"",
     error:"",
-    byusername:""
+    byusername:"",
+    usernotfollow:[]
 }
 
 export const userReducer = (state = init, action) => {
@@ -18,7 +19,7 @@ export const userReducer = (state = init, action) => {
         case UPDATE_USER:
             return {...state, user:action.payload}
         case GET_USER_NOT_FOLLOW:
-            return {...state, users:action.payload}
+            return {...state, usernotfollow:action.payload}
         case FIND_USER:
             return {...state, users:action.payload}
         case GET_INFO_FAIL:

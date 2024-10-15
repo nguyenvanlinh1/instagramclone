@@ -46,7 +46,7 @@ public class ChatController {
                 .build();
     }
 
-    @GetMapping("/")
+    @GetMapping("/user")
     ApiResponse<List<Chat>> findAllChatByUserId(){
         User user = userService.getUser();
         return ApiResponse.<List<Chat>>builder()

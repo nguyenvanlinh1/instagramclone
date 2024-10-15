@@ -1,9 +1,14 @@
 import { Button } from "@chakra-ui/react";
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { unFollowUser } from "../../../State/Follow/Action";
 
-const FollowedCard = ({ item, follow }) => {
+const FollowedCard = ({ item }) => {
+  const dispatch = useDispatch();
   const { user } = useSelector((store) => store);
+  const handleFollow = (req) => {
+    dispatch(unFollowUser(req));
+  };
   return (
     <div>
       <div className="flex justify-between items-center mt-5">

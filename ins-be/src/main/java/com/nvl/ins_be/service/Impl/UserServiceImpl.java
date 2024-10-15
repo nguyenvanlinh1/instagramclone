@@ -66,11 +66,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> findAllUserByUsername(String username) {
-        List<User> users = userRepository.findUserByName(username);
-        if(users.isEmpty()){
-            throw new AppException(ErrorCode.USER_NOT_FOUND);
-        }
-        return users;
+        return userRepository.findUserByName(username);
     }
 
     @Override

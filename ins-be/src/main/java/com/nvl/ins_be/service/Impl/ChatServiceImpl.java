@@ -26,8 +26,8 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public Chat createChat(User userReq, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        boolean isChatExist = chatRepository.findSingleChatByUserId(user, userReq);
-        if(isChatExist) throw new AppException(ErrorCode.CHAT_EXISTED);
+        Chat isChatExist = chatRepository.findSingleChatByUserId(user, userReq);
+        if(isChatExist != null) throw new AppException(ErrorCode.CHAT_EXISTED);
         Chat chat = new Chat();
         chat.setCreatedBy(userReq);
         chat.getUsers().add(user);
