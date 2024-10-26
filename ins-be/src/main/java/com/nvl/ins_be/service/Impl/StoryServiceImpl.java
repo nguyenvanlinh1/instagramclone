@@ -15,10 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +30,7 @@ public class StoryServiceImpl implements StoryService {
         Story story = new Story();
         story.setCaption(request.getCaption());
         story.setUser(user);
-        Set<ImageStory> imageStories = new LinkedHashSet<>();
+        List<ImageStory> imageStories = new ArrayList<>();
         for(ImageRequest imageRequest : request.getImages()){
             ImageStory imageStory = new ImageStory();
             imageStory.setImageUrl(imageRequest.getImageUrl());
@@ -57,8 +54,14 @@ public class StoryServiceImpl implements StoryService {
     }
 
     @Override
-    public List<Story> getAllStory() {
-        return storyRepository.findAll();
+    public List<Story> getAllStoryFromUserFollowed(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        return storyRepository.findStoryByUserId(user.getUserId());
+    }
+
+    @Override
+    public List<Story> getAllStoryByUsername(String username) {
+        return storyRepository.findStoryByUsername(username);
     }
 
     @Override

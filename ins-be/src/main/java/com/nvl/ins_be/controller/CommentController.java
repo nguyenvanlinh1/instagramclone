@@ -102,37 +102,37 @@ public class CommentController {
     }
 
     @PutMapping("/like/post/{commentId}")
-    ApiResponse<Void> likeCommentPost(@PathVariable Long commentId){
+    ApiResponse<CommentPost> likeCommentPost(@PathVariable Long commentId){
         User user = userService.getUser();
-        commentService.likeCommentPost(user.getUserId(), commentId);
-        return ApiResponse.<Void>builder()
+        return ApiResponse.<CommentPost>builder()
+                .result(commentService.likeCommentPost(user.getUserId(), commentId))
                 .message("Like Comment Post Successfully")
                 .build();
     }
 
     @PutMapping("/unlike/post/{commentId}")
-    ApiResponse<Void> unLikeCommentPost(@PathVariable Long commentId){
+    ApiResponse<CommentPost> unLikeCommentPost(@PathVariable Long commentId){
         User user = userService.getUser();
-        commentService.unLikeCommentPost(user.getUserId(), commentId);
-        return ApiResponse.<Void>builder()
+        return ApiResponse.<CommentPost>builder()
+                .result(commentService.unLikeCommentPost(user.getUserId(), commentId))
                 .message("Unlike Comment Post Successfully")
                 .build();
     }
 
     @PutMapping("/like/story/{commentId}")
-    ApiResponse<Void> likeCommentStory(@PathVariable Long commentId){
+    ApiResponse<CommentStory> likeCommentStory(@PathVariable Long commentId){
         User user = userService.getUser();
-        commentService.unLikeCommentStory(user.getUserId(), commentId);
-        return ApiResponse.<Void>builder()
+        return ApiResponse.<CommentStory>builder()
+                .result(commentService.unLikeCommentStory(user.getUserId(), commentId))
                 .message("Like Comment Story Successfully")
                 .build();
     }
 
     @PutMapping("/unlike/story/{commentId}")
-    ApiResponse<Void> unLikeCommentStory(@PathVariable Long commentId){
+    ApiResponse<CommentStory> unLikeCommentStory(@PathVariable Long commentId){
         User user = userService.getUser();
-        commentService.unLikeCommentStory(user.getUserId(), commentId);
-        return ApiResponse.<Void>builder()
+        return ApiResponse.<CommentStory>builder()
+                .result(commentService.unLikeCommentStory(user.getUserId(), commentId))
                 .message("Unlike Comment Story Successfully")
                 .build();
     }

@@ -7,7 +7,8 @@ import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -28,11 +29,10 @@ public class Story {
     String caption;
 
     @OneToMany(mappedBy = "story", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    Set<ImageStory> imageList = new LinkedHashSet<>();
+    List<ImageStory> imageList = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonIgnore
     User user;
 
     @OneToMany(mappedBy = "story", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -41,7 +41,7 @@ public class Story {
     @ManyToMany
     @JoinTable(
             name = "story_like",
-            joinColumns = @JoinColumn(name = "comment_id"),
+            joinColumns = @JoinColumn(name = "story_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     Set<User> likedStoryByUser;

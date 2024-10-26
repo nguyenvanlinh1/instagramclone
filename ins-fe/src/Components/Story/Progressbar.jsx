@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "./Progressbar.css"
-import {
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalOverlay,
-  Progress,
-} from "@chakra-ui/react";
 const Progressbar = ({ index, activeIndex, duration }) => {
   const [progress, setProgress] = useState(0);
 
@@ -40,14 +32,3 @@ const Progressbar = ({ index, activeIndex, duration }) => {
 };
 
 export default Progressbar;
-
-
-
-      {/* <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalCloseButton />
-          <Progress size="xs" isIndeterminate />
-          <ModalBody></ModalBody>
-        </ModalContent>
-      </Modal> */}

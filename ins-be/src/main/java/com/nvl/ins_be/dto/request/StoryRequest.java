@@ -4,6 +4,8 @@ import com.nvl.ins_be.model.ImagePost;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -14,5 +16,5 @@ import java.util.Set;
 public class StoryRequest {
 
     String caption;
-    Set<ImageRequest> images;
+    List<ImageRequest> images = new ArrayList<>();
 }

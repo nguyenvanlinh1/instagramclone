@@ -1,8 +1,6 @@
 package com.nvl.ins_be.service;
 
-import com.nvl.ins_be.dto.request.PostRequest;
 import com.nvl.ins_be.dto.request.StoryRequest;
-import com.nvl.ins_be.model.Post;
 import com.nvl.ins_be.model.Story;
 import com.nvl.ins_be.model.User;
 
@@ -12,7 +10,8 @@ public interface StoryService {
     Story createStory(User user, StoryRequest request);
     void deleteStory(Long storyId);
     List<Story> getAllStoryByUserId(Long userId);
-    List<Story> getAllStory();
+    List<Story> getAllStoryFromUserFollowed(Long userId);
+    List<Story> getAllStoryByUsername(String username);
 
     void likeStory(Long userId, Long storyId);
     void unLikedStory(Long userId, Long storyId);

@@ -1,18 +1,45 @@
-import React from 'react'
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { followUser } from "../../State/Follow/Action";
+import { useNavigate } from "react-router-dom";
 
-const SuggetionCard = () => {
+const SuggetionCard = ({ item }) => {
+  const { follow } = useSelector((store) => store);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const handleFollow = () => {
+    dispatch(followUser(item.userId));
+  };
+
+  const handleProfile = (username) => {
+    navigate(`/${username}`)
+  }
   return (
-    <div className='flex justify-between'>
-        <div className='flex items-center space-x-3'>
-            <img className='w-9 h-9 rounded-full' src="https://th.bing.com/th/id/OIP.mJ1NiAi2HGhUjJU17k4VVAHaN4?w=182&h=342&c=7&r=0&o=5&dpr=1.3&pid=1.7" alt="" />
-            <div>
-                <p className='text-sm font-semibold'>username</p>
-                <p className='text-sm font-semibold opacity-70'>Follows you</p>
-            </div>
+    <div className="flex justify-between">
+      <div className="flex items-center space-x-3">
+        <img
+          className="w-9 h-9 rounded-full cursor-pointer"
+          src={
+            item.userImage
+              ? item.userImage
+              : "https://hzshop.ir/img/accountimg.png"
+          }
+          alt=""
+          onClick={() => handleProfile(item.username)}
+        />
+        <div>
+          <p className="text-sm font-semibold">{item.username}</p>
+          <p className="text-sm font-semibold opacity-70">Follows you</p>
         </div>
-        <p className='text-blue-600'>Follows</p>
+      </div>
+      <p
+        className="text-blue-700 hover:opacity-50 cursor-pointer"
+        onClick={handleFollow}
+      >
+        Follow
+      </p>
     </div>
-  )
-}
+  );
+};
 
-export default SuggetionCard
+export default SuggetionCard;

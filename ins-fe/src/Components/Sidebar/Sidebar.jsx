@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { IoReorderThreeOutline } from "react-icons/io5";
 import { mainSide } from "./SidebarConfig";
 import { useNavigate } from "react-router-dom";
@@ -13,34 +13,90 @@ import {
 } from "@chakra-ui/react";
 import Search from "../Search/Search";
 import { FaInstagram } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../State/AuthApi/Action";
 
 const Sidebar = () => {
+  const { user } = useSelector((store) => store);
+  const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState("");
+  const [previousTab, setPreviousTab] = useState("");
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isSearchVisible, setIsSearchVisible] = useState(false);
+  const [isSidebar, setIsSiderbar] = useState(false);
+
+  const sidebarRef = useRef();
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Nếu click ra ngoài sidebar, set isSearchVisible và isSidebar thành false
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        // Nếu activeTab là "Search", đặt lại activeTab thành previousTab
+        if (activeTab === "Search" && previousTab === "Message") {
+          setActiveTab(previousTab); // Trở về tab trước đó
+          setIsSearchVisible(false); // Ẩn thanh tìm kiếm
+          setIsSiderbar(true); // Hiển thị sidebar
+        } else if (activeTab === "Message") {
+          setIsSearchVisible(false); // Ẩn thanh tìm kiếm
+          setIsSiderbar(true); // Hiển thị sidebar
+        } else {
+          setIsSiderbar(false);
+        }
+      }
+    };
+
+    // Gắn sự kiện khi click chuột
+    document.addEventListener("mousedown", handleClickOutside);
+    // Dọn dẹp sự kiện khi component bị unmount
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [activeTab, previousTab]);
 
   const handleTabClick = (title) => {
+    setActiveTab(setPreviousTab);
     setActiveTab(title);
     if (title === "Profile") {
-      navigate("/username");
+      navigate(`/${user?.user.data?.result?.username}`);
     } else if (title === "Home") {
       navigate("/");
+      setIsSearchVisible(false);
+      setIsSiderbar(false);
     } else if (title === "Create") {
       onOpen();
+    } else if (title === "Reels") {
+      navigate("/reels");
+      setIsSearchVisible(false);
+      setIsSiderbar(false);
     } else if (title === "Search") {
       setIsSearchVisible(true);
+      setIsSiderbar(true);
+    } else if (title === "Message") {
+      navigate("/message");
+      setIsSiderbar(true);
+      setIsSearchVisible(false);
     } else {
       setIsSearchVisible(false);
+      setIsSiderbar(false);
+      navigate("/");
     }
   };
+
+  const handleClick = () => {
+    dispatch(logout());
+    navigate("/login");
+  };
+
   return (
-    <div className="sticky top-0 h-[100vh] pl-5 w-[200%]">
-      {isSearchVisible ? (
-        <div className="flex justify-start h-full">
+    <div
+      ref={sidebarRef}
+      className="sticky top-0 h-[100vh] pl-5 border-r border-r-slate-300"
+    >
+      {isSidebar ? (
+        <div className="flex justify-start h-full w-[200%]">
           <div className="flex flex-col justify-between h-full">
             <div className="mt-5">
-              <FaInstagram className="text-5xl" />
+              <FaInstagram className="text-4xl" />
             </div>
             <div className="mt-10">
               {mainSide.map((item, index) => (
@@ -70,13 +126,17 @@ const Sidebar = () => {
                 <MenuDivider />
                 <MenuItem>Switch Account</MenuItem>
                 <MenuDivider />
-                <MenuItem>Logout</MenuItem>
+                <MenuItem onClick={handleClick}>Logout</MenuItem>
               </MenuList>
             </Menu>
           </div>
-          <div className="flex z-10">
-            <Search />
-          </div>
+          {isSearchVisible ? (
+            <div className="flex z-10">
+              <Search />
+            </div>
+          ) : (
+            ""
+          )}
         </div>
       ) : (
         <div className="flex flex-col justify-between h-full">
@@ -121,7 +181,7 @@ const Sidebar = () => {
               <MenuDivider />
               <MenuItem>Switch Account</MenuItem>
               <MenuDivider />
-              <MenuItem>Logout</MenuItem>
+              <MenuItem onClick={handleClick}>Logout</MenuItem>
             </MenuList>
           </Menu>
         </div>

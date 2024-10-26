@@ -1,18 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ProfileUserDetails from "./ProfileUserDetails/ProfileUserDetails";
 import ReqUserPostPart from "./ProfileUserDetails/ReqUserPostPart";
-import { useNavigate } from "react-router-dom";
-import SaveArticleCard from "./SaveArticle/SaveArticleCard";
-import TaggedCard from "./TaggedArticle/TaggedCard";
+import { useNavigate, useParams } from "react-router-dom";
 import { AiOutlineTable, AiOutlineUser } from "react-icons/ai";
 import { BiBookmark } from "react-icons/bi";
 import { RiVideoAddLine } from "react-icons/ri";
 import SaveArticlePost from "./SaveArticle/SaveArticlePost";
 import TaggedPost from "./TaggedArticle/TaggedPost";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllPostByUserId, getAllPostByUserLiked, getAllPostByUserSaved } from "../../State/Post/Action";
+import { findUserByUsername } from "../../State/User/Action";
 
 const MainProfile = () => {
+  const { post, user } = useSelector((store) => store);
   const [activeTab, setActiveTab] = useState("");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const param = useParams();
+
+  useEffect(() => {
+    dispatch(findUserByUsername(param.username));
+  }, []);
+
+  const usernew = user.byusername.data?.result;
+
   const tabs = [
     {
       tab: "Posts",
@@ -25,7 +36,7 @@ const MainProfile = () => {
       activeIcon: "",
     },
     {
-      tab: "Tagged",
+      tab: "Liked",
       icon: <AiOutlineUser />,
       activeIcon: "",
     },
@@ -36,14 +47,21 @@ const MainProfile = () => {
     },
   ];
 
+  useEffect(() => {
+      dispatch(getAllPostByUserId(usernew?.userId));
+      dispatch(getAllPostByUserSaved(usernew?.userId));
+      dispatch(getAllPostByUserLiked(usernew?.userId));
+  }, [post.saved, post.liked, post.posts])
+
+
   const handleTabClick = (title) => {
     setActiveTab(title);
     if (title === "Saved") {
-      navigate("/username/saved");
-    } else if (title === "Tagged") {
-      navigate("/username/tagged");
+      navigate(`/${usernew.username}/saved`);
+    } else if (title === "Liked") {
+      navigate(`/${usernew.username}/liked`);
     } else {
-      navigate("/username");
+      navigate(`/${usernew.username}`);
     }
   };
   return (
@@ -69,11 +87,11 @@ const MainProfile = () => {
         <div>
           <div className="">
             {activeTab === "Saved" ? (
-              <SaveArticlePost />
-            ) : activeTab === "Tagged" ? (
-              <TaggedPost />
+              <SaveArticlePost datasave={post.postSaved?.data?.result} />
+            ) : activeTab === "Liked" ? (
+              <TaggedPost datalike={post.postLiked?.data?.result} />
             ) : (
-              <ReqUserPostPart/>
+              <ReqUserPostPart postItem={post.posts?.data?.result}/>
             )}
           </div>
         </div>

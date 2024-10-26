@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { FaCircleCheck } from "react-icons/fa6";
 
-const HomeRight = () => {
+const HomeRight = ({user, unf}) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <div className="">
@@ -23,13 +23,13 @@ const HomeRight = () => {
             <div>
               <img
                 className="w-12 h-12 rounded-full"
-                src="https://th.bing.com/th/id/OIP.6m6AZ7QHFj5JUAc6eWE6CQHaN4?w=182&h=342&c=7&r=0&o=5&dpr=1.3&pid=1.7"
+                src={user?.userImage ? user?.userImage : "https://hzshop.ir/img/accountimg.png"}
                 alt=""
               />
             </div>
             <div className="ml-3">
-              <p>Fullname</p>
-              <p className="opacity-60">username</p>
+              <p>{user?.fullName}</p>
+              <p className="opacity-60">{user?.username}</p>
             </div>
           </div>
           <Button onClick={onOpen}>Switch</Button>
@@ -72,8 +72,8 @@ const HomeRight = () => {
           <a href="#">See all</a>
         </div>
         <div className="space-y-5">
-          {[1, 1, 1, 1, 1].map((_, index) => (
-            <SuggetionCard key={index}/>
+          {unf?.map((item, index) => (
+            <SuggetionCard key={index} item={item}/>
           ))}
         </div>
       </div>

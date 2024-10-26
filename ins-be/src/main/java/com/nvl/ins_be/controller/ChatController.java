@@ -62,7 +62,7 @@ public class ChatController {
                 .build();
     }
 
-    @DeleteMapping("/{chatId}/delete/{userId}")
+    @PutMapping("/{chatId}/delete/{userId}")
     ApiResponse<Void> removeUserFromGroup(@PathVariable Long chatId, @PathVariable Long userId){
         User user = userService.getUser();
         chatService.removeFromGroup(chatId, userId, user);

@@ -15,4 +15,7 @@ public interface UserService {
     User getUser();
 
     List<User> findAllUserByUsername(String username);
+    List<User> findUserNotFollow(Long userId);
+
+    User findUserByUsername(String username);
 }

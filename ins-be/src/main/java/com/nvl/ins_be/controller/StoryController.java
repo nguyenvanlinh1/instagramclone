@@ -1,9 +1,7 @@
 package com.nvl.ins_be.controller;
 
-import com.nvl.ins_be.dto.request.PostRequest;
 import com.nvl.ins_be.dto.request.StoryRequest;
 import com.nvl.ins_be.dto.response.ApiResponse;
-import com.nvl.ins_be.model.Post;
 import com.nvl.ins_be.model.Story;
 import com.nvl.ins_be.model.User;
 import com.nvl.ins_be.service.StoryService;
@@ -35,7 +33,6 @@ public class StoryController {
 
     @DeleteMapping("/delete/{storyId}")
     ApiResponse<Void> updateStory(@PathVariable Long storyId){
-        User user = userService.getUser();
         storyService.deleteStory(storyId);
         return ApiResponse.<Void>builder()
                 .message("Delete Story Successfully")
@@ -50,11 +47,17 @@ public class StoryController {
                 .build();
     }
 
-    @GetMapping("/all")
-    ApiResponse<List<Story>> getAllStory(){
-        User user = userService.getUser();
+    @GetMapping("/{userId}")
+    ApiResponse<List<Story>> getAllStoryFromUserFollowed(@PathVariable Long userId){
         return ApiResponse.<List<Story>>builder()
-                .result(storyService.getAllStory())
+                .result(storyService.getAllStoryFromUserFollowed(userId))
+                .build();
+    }
+
+    @GetMapping("/username")
+    ApiResponse<List<Story>> getAllStoryFromUserFollowed(@RequestParam("username") String username){
+        return ApiResponse.<List<Story>>builder()
+                .result(storyService.getAllStoryByUsername(username))
                 .build();
     }
 
