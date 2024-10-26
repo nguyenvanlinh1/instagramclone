@@ -39,7 +39,7 @@ const HomePage = () => {
       navigate("/login");
     }
     else {dispatch(getUser(token))};
-  }, [auth]);
+  }, [auth, token]);
 
   useEffect(() => {
     if(user.user){

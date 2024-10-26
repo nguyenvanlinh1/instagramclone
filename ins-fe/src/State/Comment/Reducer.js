@@ -15,7 +15,8 @@ import {
 } from "../Type/ActionType";
 
 const init = {
-  comments: [],
+  commentPosts: [],
+  commentStorys: [],
   comment: "",
   error: "",
   notification: "",

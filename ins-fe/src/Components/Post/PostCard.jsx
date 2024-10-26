@@ -63,6 +63,7 @@ const PostCard = ({ item }) => {
 
   const uuId = user.user.data?.result?.userId
   const uu = user.user.data?.result;
+
   useEffect(() => {
     setIsPostLiked(isPostLike(item, uuId));
     setIsSaved(isPostSave(item, uuId));

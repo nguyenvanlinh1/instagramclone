@@ -44,12 +44,12 @@ function timeDifference(pastTime) {
   }
 }
 
-const CommentCard = ({ commentItem }) => {
+const CommentCard = ({ commentItem, isConnect, stompClient, handleDeleteComment }) => {
   const [isCheckComment, setIsCheckComment] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = useRef();
   const dispatch = useDispatch();
-  const { user } = useSelector((store) => store);
+  const { user, comment } = useSelector((store) => store);
 
   const [isReplay, setIsReplay] = useState(false);
   const handleReplay = () => {
@@ -70,9 +70,9 @@ const CommentCard = ({ commentItem }) => {
   const [isCommentReplay, setIsCommentReplay] = useState(false);
   const handleLikeComment = () => {
     if (isCommentLiked) {
-      dispatch(unLikeCommentPost(commentItem.commentId));
+      dispatch(unLikeCommentPost(commentItem?.commentId));
     } else {
-      dispatch(likeCommentPost(commentItem.commentId));
+      dispatch(likeCommentPost(commentItem?.commentId));
     }
     setIsCommentLike(!isCommentLiked);
   };
@@ -100,10 +100,18 @@ const CommentCard = ({ commentItem }) => {
     setIsCommentLike(isCommentLike(commentItem, uu?.userId));
   }, [commentItem, uu?.userId]);
 
-  const handleDeleteComment = () => {
-    dispatch(deleteCommentPost(commentItem?.commentId));
+  // const handleDeleteComment = () => {
+  //   dispatch(deleteCommentPost(commentItem?.commentId));
+  //   if (isConnect) {
+  //     stompClient?.send("/app/comment/delete", {}, commentItem?.commentId);
+  //   }
+  //   onClose();
+  // };
+  const onDeleteClick = () => {
+    handleDeleteComment(commentItem.commentId);
     onClose();
   };
+  
 
   return (
     <div>
@@ -113,8 +121,8 @@ const CommentCard = ({ commentItem }) => {
             <img
               className="h-9 w-9 rounded-full"
               src={
-                commentItem?.user.userImage
-                  ? commentItem?.user.userImage
+                commentItem?.user?.userImage
+                  ? commentItem?.user?.userImage
                   : "https://hzshop.ir/img/accountimg.png"
               }
               alt=""
@@ -123,13 +131,13 @@ const CommentCard = ({ commentItem }) => {
           <div className="ml-3 ">
             <p className="space-x-5">
               <span className="font-semibold">
-                {commentItem?.user.username}
+                {commentItem?.user?.username}
               </span>
               <span className="font-thin">{commentItem?.content}</span>
             </p>
             <div className="flex items-center space-x-3 text-xs opacity-60">
               <span>{timeDifference(commentItem?.createAt)} ago</span>
-              <span>{commentItem?.likedCommentByUser.length} likes</span>
+              <span>{commentItem?.likedCommentByUser?.length} likes</span>
               <button className="" onClick={handleReplay}>
                 Replay
               </button>
@@ -161,7 +169,7 @@ const CommentCard = ({ commentItem }) => {
                       </Button>
                       <Button
                         colorScheme="red"
-                        onClick={handleDeleteComment}
+                        onClick={onDeleteClick}
                         ml={3}
                       >
                         Delete
@@ -198,11 +206,11 @@ const CommentCard = ({ commentItem }) => {
                 ""
               )}
             </div>
-            {commentItem?.replyComments.length !== 0 ? (
+            {commentItem?.replyComments?.length !== 0 ? (
               <div className="flex items-center space-x-3 text-xs opacity-60 pt-5">
                 <span>-----</span>
                 <button>
-                  views replies ({commentItem?.replyComments.length}){" "}
+                  views replies ({commentItem?.replyComments?.length}){" "}
                 </button>
               </div>
             ) : (
@@ -225,7 +233,7 @@ const CommentCard = ({ commentItem }) => {
       {commentItem?.replyComments &&
         commentItem?.replyComments.map((replyCommentItem) => (
           <div
-            key={replyCommentItem.commentId}
+            key={replyCommentItem?.commentId}
             className="flex items-center justify-between mt-5"
           >
             <div className="flex items-center ml-10">
@@ -257,12 +265,14 @@ const CommentCard = ({ commentItem }) => {
             </div>
             {isCommentReplay ? (
               <AiFillHeart
-                onClick={() => handleLikeCommentReplay(replyCommentItem.commentId)}
+                onClick={() =>
+                  handleLikeCommentReplay(replyCommentItem?.commentId)
+                }
                 className="text-xs hover:opacity-50 cursor-pointer text-red-600"
               />
             ) : (
               <AiOutlineHeart
-                onClick={handleLikeCommentReplay(replyCommentItem.commentId)}
+                onClick={handleLikeCommentReplay(replyCommentItem?.commentId)}
                 className="text-xs hover:opacity-50 cursor-pointer"
               />
             )}

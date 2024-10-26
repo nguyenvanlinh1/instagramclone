@@ -4,6 +4,7 @@ import { CREATE_COMMENT_POST, CREATE_COMMENT_POST_REPLAY, CREATE_COMMENT_STORY, 
 export const createPostComment = (req, postId) => async(dispatch) => {
     try {
         const data = await api.post(`/comment/create/post/${postId}`, req)
+        console.log("daat", data)
         dispatch({type:CREATE_COMMENT_POST, payload:data})
     } catch (error) {
         dispatch({type:CREATE_INFO_FAIL, error:error.message})
@@ -40,7 +41,6 @@ export const createCommentStoryReplay = (req, commentId) => async(dispatch) => {
 export const deleteCommentPost = (commentId) => async(dispatch) => {
     try {
         const data = await api.delete(`/comment/delete/post/${commentId}`)
-        console.log(data)
         dispatch({type:DELETE_COMMENT_POST, payload:data})
     } catch (error) {
         dispatch({type:DELETE_INFO_FAIL, error:error.message})

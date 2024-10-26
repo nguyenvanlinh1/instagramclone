@@ -28,7 +28,8 @@ public enum ErrorCode {
     USER_NOT_ALREADY_FOLLOWED(1012, "User not already followed", HttpStatus.BAD_REQUEST),
     CHAT_NOT_EXISTED(1013, "Chat not existed", HttpStatus.NOT_FOUND),
     CHAT_EXISTED(1014, "Chat existed", HttpStatus.BAD_REQUEST),
-    MESSAGE_NOT_EXISTED(1015, "Message not existed", HttpStatus.NOT_FOUND)
+    MESSAGE_NOT_EXISTED(1015, "Message not existed", HttpStatus.NOT_FOUND),
+    CANNOT_SEND_EMAIL(1234, "Can not send email", HttpStatus.BAD_REQUEST)
     ;
 
     int code;

@@ -7,12 +7,12 @@ import { signin } from "../../../State/AuthApi/Action";
 import { OAuthConfig } from "../../../Config/OAuthConfig";
 
 const Signin = () => {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
-  const {auth, user } = useSelector((store) => store);
+  const { auth, user } = useSelector((store) => store);
   const accessToken = localStorage.getItem("accessToken");
 
   const [data, setData] = useState({
@@ -30,10 +30,10 @@ const Signin = () => {
 
   const handleSignin = (e) => {
     e.preventDefault();
-    setLoading(true)
+    setLoading(true);
     dispatch(signin(data));
     setTimeout(() => {
-      setLoading(false)
+      setLoading(false);
       navigate("/");
     }, 2000);
   };
@@ -50,15 +50,34 @@ const Signin = () => {
     window.location.href = targetUrl;
   };
 
-  // console.log("Token:", auth);
-  // console.log("User", user)
-  // console.log("Access", accessToken)
+  // const [dataEmail, setDataEmail] = useState({
+  //   to: {
+  //     email: "nvanlinh1406@gmail.com",
+  //     name: "Nguyen Van Linh",
+  //   },
+  //   subject: "Welcome to Instagram",
+  //   htmlContent: `<p>Hello ${user.user.data?.result?.username}</p>`,
+  // });
 
   // useEffect(() => {
-  //   if (accessToken) {
-  //     navigate("/");
-  //   }
-  // }, [navigate]);
+  //   fetch("http://localhost:8888/email/send", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Authorization: `Bearer ${accessToken}`,
+  //     },
+  //     body: JSON.stringify(dataEmail)
+  //   })
+  //     .then((response) => {
+  //       response.json();
+  //     })
+  //     .then((data) => {
+  //       console.log(data);
+  //     })
+  //     .catch((error) => {
+  //       console.log(error)
+  //     });
+  // }, [accessToken]);
 
   return (
     <div>

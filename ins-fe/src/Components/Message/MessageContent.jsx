@@ -117,7 +117,7 @@ const MessageContent = () => {
 
   useEffect(() => {
     setMessages(message.messages.data?.result);
-  }, [message.messages]);
+  }, [message.messages, message.notification]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -156,6 +156,25 @@ const MessageContent = () => {
   const handleDeleteMessage = (messageId) => {
     dispatch(deleteMessage(messageId));
   };
+
+  useEffect(() => {
+    stompClient?.send("/app/message/delete", {}, );
+  }, [message.notification])
+
+  useEffect(() => {
+    if (message.notification && stompClient) {
+      const subscription = stompClient?.subscribe(
+        "/group/delete",
+        (payload) => {
+          console.log("Messgae Id", payload);
+          setMessages([...messages])
+        }
+      );
+      return () => {
+        subscription.unsubscribe();
+      };
+    }
+  }, [isConnect]);
 
   return (
     <div>

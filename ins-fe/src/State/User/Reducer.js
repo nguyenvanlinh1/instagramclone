@@ -5,7 +5,7 @@ const init = {
     user:"",
     error:"",
     byusername:"",
-    usernotfollow:[]
+    usernotfollow:[],
 }
 
 export const userReducer = (state = init, action) => {

@@ -20,6 +20,9 @@ spring:
 jwt:
   signerKey: ZnjLwNmSRIuZ1PbtYkTEbUC60gEbjucoBYT20JY2HQjJtA8hf4poYAav6NAY7uxL
 
+email:
+  apiKey: "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"
+
 
 outbound:
   client-id: "1040903330486-pjq1nditab2guhaolurvguru7b592m5o.apps.googleusercontent.com"
