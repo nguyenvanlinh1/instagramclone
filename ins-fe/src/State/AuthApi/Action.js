@@ -4,11 +4,12 @@ import { SIGNIN, SIGNIN_FAIL, SIGNOUT, SIGNUP_FAIL } from "../Type/ActionType";
 export const signin = (req) => async (dispatch) => {
     try {
         const data = await axios.post("http://localhost:8888/auth/sign_in", req)
-        if(data.data.result.token){
-            localStorage.setItem("accessToken", data.data.result.token);
+        if(data.data?.result?.token){
+            localStorage.setItem("accessToken", data.data?.result?.token);
             dispatch({type:SIGNIN, payload:data})
         } 
     } catch (error) {
+        console.log("Error:",error);
         dispatch({type:SIGNIN_FAIL, error:error.message})
     }
 }
@@ -16,8 +17,8 @@ export const signin = (req) => async (dispatch) => {
 export const signup = (req) => async(dispatch) => {
     try {
         const data = await axios.post("http://localhost:8888/auth/sign_up", req)
-        if(data.data.result.token){
-            localStorage.setItem("accessToken", data.data.result.token);
+        if(data.data?.result?.token){
+            localStorage.setItem("accessToken", data.data?.result?.token);
             dispatch({type:SIGNIN, payload:data})
         }
     } catch (error) {
@@ -26,6 +27,6 @@ export const signup = (req) => async(dispatch) => {
 }
 
 export const logout = () => async(dispatch) => {
-    localStorage.removeItem("accessToken");
+    localStorage.clear("accessToken");
     dispatch({type:SIGNOUT})
 }

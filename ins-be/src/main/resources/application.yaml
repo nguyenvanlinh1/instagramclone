@@ -5,7 +5,7 @@ spring:
   application:
     name: ins-be
   datasource:
-    url: jdbc:mysql://localhost:3307/insclone
+    url: jdbc:mysql://mysql:3306/insclone
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver

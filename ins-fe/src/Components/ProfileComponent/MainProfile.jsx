@@ -22,7 +22,10 @@ const MainProfile = () => {
     dispatch(findUserByUsername(param.username));
   }, [param.username]);
 
-  const usernew = user.byusername.data?.result;
+  console.log("User", user);
+  console.log("Post", post)
+
+  const usernew = user?.byusername?.data?.result;
   const tabs = [
     {
       tab: "Posts",
@@ -50,7 +53,8 @@ const MainProfile = () => {
       dispatch(getAllPostByUserId(usernew?.userId));
       dispatch(getAllPostByUserSaved(usernew?.userId));
       dispatch(getAllPostByUserLiked(usernew?.userId));
-  }, [post.saved, post.liked])
+      console.log("ABC")
+  }, [post.saved, post.liked, param, usernew?.userId])
 
 
   const handleTabClick = (title) => {

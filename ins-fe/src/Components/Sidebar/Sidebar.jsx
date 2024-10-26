@@ -84,7 +84,9 @@ const Sidebar = () => {
 
   const handleClick = () => {
     dispatch(logout());
-    navigate("/login");
+    setTimeout(() => {
+      navigate("/login");
+    }, 1000)
   };
 
   return (
