@@ -18,6 +18,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
@@ -32,6 +33,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Slf4j
 public class AuthenticationService {
 
     UserRepository userRepository;
@@ -45,7 +47,7 @@ public class AuthenticationService {
 
         var user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        boolean authenticated = passwordEncoder.matches(user.getPassword(), request.getPassword());
+        boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
         if(!authenticated) throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
 
         var token = generateToken(user);
@@ -56,12 +58,20 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticate(UserRequest request){
 
-        var user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        boolean isUser = userRepository.existsByEmail(request.getEmail());
+        if(isUser) throw new AppException(ErrorCode.USER_EXISTED);
+        User user = User.builder()
+                .email(request.getEmail())
+                .fullName(request.getFullName())
+                .username(request.getUsername())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .build();
 
-        boolean authenticated = passwordEncoder.matches(user.getPassword(), request.getPassword());
-        if(!authenticated) throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+        userRepository.save(user);
 
         var token = generateToken(user);
+        log.info("Token {}", token);
+
         return AuthenticationResponse.builder()
                 .token(token)
                 .build();
@@ -69,7 +79,7 @@ public class AuthenticationService {
 
     public String generateToken(User user){
 
-        JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.ES512);
+        JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(user.getEmail())

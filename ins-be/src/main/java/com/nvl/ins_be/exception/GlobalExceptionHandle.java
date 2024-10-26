@@ -43,4 +43,15 @@ public class GlobalExceptionHandle {
 
         return ResponseEntity.status(errorCode.getStatusCode()).body(apiResponse);
     }
+
+//    @SuppressWarnings("rawtypes")
+//    @ExceptionHandler(value = IllegalArgumentException.class)
+//    ResponseEntity<ApiResponse> handleIllegalArgument(IllegalArgumentException exception){
+//        String enumKey = Objects.requireNonNull(exception.getMessage());
+//        ErrorCode errorCode = ErrorCode.valueOf(enumKey);
+//        ApiResponse apiResponse = new ApiResponse();
+//        apiResponse.setCode(errorCode.getCode());
+//        apiResponse.setMessage(errorCode.getMessage());
+//        return ResponseEntity.status(errorCode.getStatusCode()).body(apiResponse);
+//    }
 }

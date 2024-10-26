@@ -10,12 +10,17 @@ import com.nvl.ins_be.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     UserRepository userRepository;
@@ -36,5 +41,35 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
         return AuthenticationResponse.builder()
                 .build();
+    }
+
+    @Override
+    public User updateUser(Long userId, UserRequest userRequest) {
+        User updateUser = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        updateUser.setUserImage(userRequest.getUserImage());
+        updateUser.setBio(userRequest.getBio());
+        updateUser.setGender(userRequest.getGender());
+        return userRepository.save(updateUser);
+    }
+
+    @Override
+    public void deleteUser(Long userId) {
+        userRepository.deleteById(userId);
+    }
+
+    @Override
+    public User getUser() {
+        var context = SecurityContextHolder.getContext();
+        String name = context.getAuthentication().getName();
+        return userRepository.findByEmail(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+    }
+
+    @Override
+    public List<User> findAllUserByUsername(String username) {
+        List<User> users = userRepository.findUserByName(username);
+        if(users.isEmpty()){
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
+        }
+        return users;
     }
 }

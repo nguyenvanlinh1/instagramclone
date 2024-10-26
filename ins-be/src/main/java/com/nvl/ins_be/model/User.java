@@ -1,13 +1,15 @@
 package com.nvl.ins_be.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @NoArgsConstructor
@@ -24,10 +26,10 @@ public class User {
     Long userId;
 
     @Column(name = "username")
+    @NotEmpty
     String username;
 
     @Column(name = "password")
-    @Size(min = 8, message = "INVALID_PASSWORD")
     String password;
 
     @Column(name = "user_email")
@@ -38,6 +40,29 @@ public class User {
 
     @Column(name = "user_image")
     String userImage;
+
+    @Column(name = "gender")
+    String gender;
+
+    @Column(name = "bio")
+    String bio;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    Set<Post> posts;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    Set<CommentPost> comments;
+
+    @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    Set<Follow> followers;
+
+    @OneToMany(mappedBy = "followed", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    Set<Follow> followings;
+
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    Set<Message> sentMessage;
 
     @Column(name = "create_at")
     @CreationTimestamp
