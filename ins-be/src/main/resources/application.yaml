@@ -5,7 +5,7 @@ spring:
   application:
     name: ins-be
   datasource:
-    url: jdbc:mysql://mysql:3306/insclone
+    url: jdbc:mysql://localhost:3307/insclone
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -20,10 +20,13 @@ spring:
 jwt:
   signerKey: ZnjLwNmSRIuZ1PbtYkTEbUC60gEbjucoBYT20JY2HQjJtA8hf4poYAav6NAY7uxL
 
+email:
+  apiKey: "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"
+
 
 outbound:
   client-id: "1040903330486-pjq1nditab2guhaolurvguru7b592m5o.apps.googleusercontent.com"
   client-secret: "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"
-  redirect-uri: "http://localhost:5173/authenticate"
+  redirect-uri: "http://localhost:4545/authenticate"
 
 

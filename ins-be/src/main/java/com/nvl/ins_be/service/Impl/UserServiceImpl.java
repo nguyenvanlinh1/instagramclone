@@ -1,16 +1,24 @@
 package com.nvl.ins_be.service.Impl;
 
+import com.nvl.ins_be.dto.request.SendEmail.EmailRequest;
+import com.nvl.ins_be.dto.request.SendEmail.Receive;
+import com.nvl.ins_be.dto.request.SendEmail.Sender;
 import com.nvl.ins_be.dto.request.UserRequest;
 import com.nvl.ins_be.dto.response.AuthenticationResponse;
 import com.nvl.ins_be.exception.AppException;
 import com.nvl.ins_be.exception.ErrorCode;
 import com.nvl.ins_be.model.User;
+import com.nvl.ins_be.repository.HttpClient.EmailClient;
 import com.nvl.ins_be.repository.UserRepository;
+import com.nvl.ins_be.service.EmailService;
 import com.nvl.ins_be.service.UserService;
+import feign.FeignException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,6 +33,11 @@ public class UserServiceImpl implements UserService {
 
     UserRepository userRepository;
     PasswordEncoder passwordEncoder;
+    EmailClient emailClient;
+
+    @NonFinal
+    @Value("${email.apiKey}")
+    protected String API_KEY;
 
     @Override
     public AuthenticationResponse createUser(UserRequest request) {
@@ -37,6 +50,27 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setUsername(request.getUsername());
         user.setFullName(request.getFullName());
+
+        EmailRequest emailRequest = EmailRequest.builder()
+                .sender(Sender.builder()
+                        .name("NguyenVanLinh")
+                        .email("nvanlinh1406@gmail.com")
+                        .build())
+                .to(List.of(Receive.builder()
+                                .email("nvanlinh@yopmail.com")
+                                .name(request.getUsername())
+                        .build()))
+                .subject("Welcome to Instagram")
+                .htmlContent("Hello " + request.getFullName())
+                .build();
+
+        try {
+            emailClient.sendEmail(API_KEY, emailRequest);
+            log.info("Email");
+        }
+        catch (FeignException e) {
+            throw  new AppException(ErrorCode.CANNOT_SEND_EMAIL);
+        }
 
         userRepository.save(user);
         return AuthenticationResponse.builder()
@@ -66,11 +100,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> findAllUserByUsername(String username) {
-        List<User> users = userRepository.findUserByName(username);
-        if(users.isEmpty()){
-            throw new AppException(ErrorCode.USER_NOT_FOUND);
-        }
-        return users;
+        return userRepository.findUserByName(username);
     }
 
     @Override

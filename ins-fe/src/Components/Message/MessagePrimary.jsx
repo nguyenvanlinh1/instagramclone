@@ -32,9 +32,6 @@ const MessagePrimary = ({ item }) => {
     dispatch(deleteChat(chatId));
   };
 
-
-  console.log(item)
-
   return (
     <div>
       {item?.map((itemChat, index) => (

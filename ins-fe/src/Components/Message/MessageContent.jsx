@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import SockJS from "sockjs-client";
 import { over } from "stompjs";
 import { FaPhone } from "react-icons/fa6";
@@ -43,24 +43,24 @@ function timeDifference(pastTime) {
   const diffInDays = Math.floor(diffInHours / 24);
 
   if (diffInMinutes < 60) {
-    return diffInMinutes + "M"; // Nếu chênh lệch dưới 1 giờ
+    return diffInMinutes + "M";
   } else if (diffInHours < 24) {
-    return diffInHours + "H"; // Nếu chênh lệch dưới 24 giờ
+    return diffInHours + "H";
   } else {
-    return diffInDays + "N"; // Nếu chênh lệch trên 24 giờ
+    return diffInDays + "N";
   }
 }
 
 const MessageContent = () => {
   const { chat, message, user } = useSelector((store) => store);
-  console.log(message);
   const dispatch = useDispatch();
   const param = useParams();
 
   const [stompClient, setStompClient] = useState();
   const [isConnect, setIsConnect] = useState(false);
   const [messages, setMessages] = useState([]);
-  console.log(messages)
+
+  const messagesEndRef = useRef(null);
 
   const connect = () => {
     let sock = new SockJS("http://localhost:8888/websocket");
@@ -75,12 +75,11 @@ const MessageContent = () => {
   };
 
   const onConnect = () => {
-    console.log("Connected Websocket");
     setIsConnect(true);
   };
 
   useEffect(() => {
-    if (message.message.data?.result && stompClient) {
+    if (message.message && stompClient) {
       setMessages([...messages, message.message.data?.result]);
       stompClient?.send(
         "/app/message",
@@ -108,7 +107,6 @@ const MessageContent = () => {
   }, [isConnect]);
 
   const onMessageReceive = (payload) => {
-    console.log("Receive message", JSON.parse(payload.body));
     const receivedMessage = JSON.parse(payload.body);
     setMessages([...messages, receivedMessage]);
   };
@@ -119,7 +117,15 @@ const MessageContent = () => {
 
   useEffect(() => {
     setMessages(message.messages.data?.result);
-  }, [message.messages.data?.result]);
+  }, [message.messages, message.notification]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const [content, setContent] = useState("");
   const handleChangeInput = (e) => {
@@ -127,15 +133,14 @@ const MessageContent = () => {
   };
   useEffect(() => {
     dispatch(findChatById(param.chatId));
-  }, [param]);
+  }, [param.chatId]);
 
   useEffect(() => {
     dispatch(getChatMessage(param.chatId));
-  }, [param, message.notification, message.message]);
+  }, [param, message.notification]);
 
   const cc = chat.chat.data?.result;
   const uu = user.user.data?.result;
-  const mm = message.messages?.data?.result;
 
   const handleSendMessage = () => {
     dispatch(
@@ -151,6 +156,25 @@ const MessageContent = () => {
   const handleDeleteMessage = (messageId) => {
     dispatch(deleteMessage(messageId));
   };
+
+  useEffect(() => {
+    stompClient?.send("/app/message/delete", {}, );
+  }, [message.notification])
+
+  useEffect(() => {
+    if (message.notification && stompClient) {
+      const subscription = stompClient?.subscribe(
+        "/group/delete",
+        (payload) => {
+          console.log("Messgae Id", payload);
+          setMessages([...messages])
+        }
+      );
+      return () => {
+        subscription.unsubscribe();
+      };
+    }
+  }, [isConnect]);
 
   return (
     <div>
@@ -177,7 +201,7 @@ const MessageContent = () => {
               <AiFillInfoCircle />
             </div>
           </div>
-          <div className="overflow-y-scroll">
+          <div className="overflow-y-auto">
             <div className="flex flex-col items-center mt-8">
               <img
                 className="w-24 h-24 rounded-full"
@@ -313,6 +337,7 @@ const MessageContent = () => {
                   );
                 })}
             </div>
+            <div ref={messagesEndRef}></div>
           </div>
           <div className="p-5 sticky">
             <InputGroup>
@@ -336,6 +361,7 @@ const MessageContent = () => {
                 size="lg"
                 name="message"
                 onChange={handleChangeInput}
+                value={content}
               ></Input>
               <InputRightElement width="8rem">
                 {content !== "" ? (

@@ -4,6 +4,7 @@ import { CREATE_CHAT, CREATE_INFO_FAIL, DELETE_CHAT, DELETE_INFO_FAIL, FIND_CHAT
 export const createChat = (req) => async(dispatch) => {
     try {
         const data =await api.post(`/chat/create/single`, req);
+        console.log("Data", data)
         dispatch({type:CREATE_CHAT, payload:data})
     } catch (error) {
         dispatch({type:CREATE_INFO_FAIL, error:error.message})
@@ -30,7 +31,8 @@ export const findChatById = (chatId) => async(dispatch) => {
 
 export const findAllChatByUserId = () => async(dispatch) => {
     try {
-        const data =await api.get(`/chat/`);
+        const data =await api.get(`/chat/user`);
+        console.log(data)
         dispatch({type:GET_CHAT, payload:data})
     } catch (error) {
         dispatch({type:GET_ALL_INFO_FAIL, error:error.message})

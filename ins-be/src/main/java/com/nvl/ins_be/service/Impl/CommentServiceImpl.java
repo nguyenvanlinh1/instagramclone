@@ -36,6 +36,8 @@ public class CommentServiceImpl implements CommentService {
         comment.setPost(post);
         comment.setUser(user);
 
+        commentPostRepository.save(comment);
+
         post.getComments().add(comment);
         postRepository.save(post);
         return comment;
@@ -50,6 +52,8 @@ public class CommentServiceImpl implements CommentService {
         comment.setContent(request.getContent());
         comment.setStory(story);
         comment.setUser(user);
+
+        commentStoryRepository.save(comment);
 
         story.getComments().add(comment);
         storyRepository.save(story);

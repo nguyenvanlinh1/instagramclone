@@ -9,19 +9,12 @@ import {
   ModalOverlay,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { unFollowUser } from "../../../State/Follow/Action";
 import FollowedCard from "./FollowedCard";
 
 const ListFollowed = ({ onClose, isOpen, followed, follow }) => {
   const [isActive, setIsActive] = useState("people");
   const handleClick = (value) => {
     setIsActive(value);
-  };
-  const dispatch = useDispatch();
-
-  const handleFollow = (req) => {
-    dispatch(unFollowUser(req));
   };
 
   return (
@@ -55,7 +48,7 @@ const ListFollowed = ({ onClose, isOpen, followed, follow }) => {
                 {" "}
                 <Input borderRadius="20px" placeholder="Search ..." />
                 {followed?.result?.map((item, index) => (
-                  <FollowedCard key={index} follow={follow} item={item}/>
+                  <FollowedCard key={index} item={item}/>
                 ))}{" "}
               </>
             ) : (

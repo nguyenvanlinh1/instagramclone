@@ -56,7 +56,9 @@ const ProfileUserDetails = () => {
   }, [usernew?.userId, follow.notification]);
 
   useEffect(() => {
-    setIsUserFollowed(checkFollowed(usernew?.userId, ff));
+    if(ff){
+      setIsUserFollowed(checkFollowed(usernew?.userId, ff));
+    }
   }, [ff]);
   const handleEdit = () => {
     navigate("edit");
@@ -66,9 +68,13 @@ const ProfileUserDetails = () => {
     setIsFollowing(!isFollowing);
   };
 
+  console.log(usernew)
+
   const handleCreateChat = (userId) => {
     dispatch(createChat({ userId }));
-    navigate("/message");
+    setTimeout(() => {
+      navigate("/message");
+    }, 1500)
   };
   return (
     <div className="py-10 w-full">

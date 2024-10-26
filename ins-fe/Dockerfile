@@ -14,8 +14,9 @@ FROM nginx:mainline-alpine3.20-slim
 WORKDIR /app
 
 COPY --from=build /app/dist/ /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 2002
+EXPOSE 80
 
 CMD [ "nginx", "-g", "daemon off;" ]
 

@@ -14,7 +14,7 @@ import MessageContent from "../../Message/MessageContent";
 
 const Routers = () => {
   const location = useLocation();
-  const isMessagePage = location.pathname === "/message";
+  const isMessagePage = location.pathname.startsWith("/message");;
   return (
     <div>
       {(location.pathname === "/login" || location.pathname === "/signup") && (

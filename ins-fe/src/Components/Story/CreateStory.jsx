@@ -16,6 +16,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { createStory, getAllStoryByUser } from "../../State/Story/Action";
 
 const CreateStory = ({ isOpen, onClose }) => {
+  const [loading, setLoading] = useState(false);
+  const [createLoading, setCreateLoading] = useState(false);
   const { story } = useSelector((store) => store);
   useEffect(() => {
     dispatch(getAllStoryByUser());
@@ -43,6 +45,7 @@ const CreateStory = ({ isOpen, onClose }) => {
   };
 
   const handleImage = async (e) => {
+    setLoading(true);
     const image = e.target.files[0];
     const url = await uploadToCloudinary(image);
     setData((prev) => ({
@@ -52,10 +55,16 @@ const CreateStory = ({ isOpen, onClose }) => {
       ),
     }));
     setFile(image);
+    setLoading(false);
   };
 
   const handleCreateStory = (req) => {
-    dispatch(createStory(req));
+    setCreateLoading(true);
+    setTimeout(() => {
+      dispatch(createStory(req));
+      setCreateLoading(false);
+      onClose();
+    }, 2000);
   };
 
   return (
@@ -69,22 +78,26 @@ const CreateStory = ({ isOpen, onClose }) => {
             <div className="space-y-2">
               {!file && (
                 <div className="drag-drop h-full" onDrop={handleFile}>
-                  <div className="flex flex-col items-center justify-center space-y-4">
-                    <FaPhotoVideo className="text-5xl" />
-                    <p>Drag Photos or Video here</p>
-                    <Button bgColor="#0095F6">
-                      <label htmlFor="file_upload">Change Photo</label>
-                      <input
-                        type="file"
-                        id="file_upload"
-                        style={{ display: "none" }}
-                        multiple
-                        accept="video/*, image/*"
-                        name="imageUrl"
-                        onClick={handleImage}
-                      ></input>
-                    </Button>
-                  </div>
+                  {loading ? (
+                    <div class="border-gray-300 h-20 w-20 animate-spin rounded-full border-8 border-t-blue-600" />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center space-y-4">
+                      <FaPhotoVideo className="text-5xl" />
+                      <p>Select Photos or Video here</p>
+                      <Button bgColor="#0095F6">
+                        <label htmlFor="file_upload">Change Photo</label>
+                        <input
+                          type="file"
+                          id="file_upload"
+                          style={{ display: "none" }}
+                          multiple
+                          accept="video/*, image/*"
+                          name="imageUrl"
+                          onClick={handleImage}
+                        ></input>
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
               {file && (
@@ -106,11 +119,15 @@ const CreateStory = ({ isOpen, onClose }) => {
 
           <ModalFooter>
             <Button
-              colorScheme="blue"
+              sx={{bgColor: "#0095F6"}}
               mr={3}
               onClick={() => handleCreateStory(data)}
             >
-              Create
+              {createLoading ? (
+                <div class="w-8 h-8 border-8 border-dashed rounded-full animate-spin border-blue-600"></div>
+              ) : (
+                "Create"
+              )}
             </Button>
             <Button variant="ghost" onClick={onClose}>
               Cancel

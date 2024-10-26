@@ -8,14 +8,19 @@ import com.nimbusds.jwt.SignedJWT;
 import com.nvl.ins_be.dto.request.AuthenticationRequest;
 import com.nvl.ins_be.dto.request.ExchangeTokenRequest;
 import com.nvl.ins_be.dto.request.LogoutRequest;
+import com.nvl.ins_be.dto.request.SendEmail.EmailRequest;
+import com.nvl.ins_be.dto.request.SendEmail.Receive;
+import com.nvl.ins_be.dto.request.SendEmail.Sender;
 import com.nvl.ins_be.dto.request.UserRequest;
 import com.nvl.ins_be.dto.response.AuthenticationResponse;
 import com.nvl.ins_be.exception.AppException;
 import com.nvl.ins_be.exception.ErrorCode;
 import com.nvl.ins_be.model.User;
+import com.nvl.ins_be.repository.HttpClient.EmailClient;
 import com.nvl.ins_be.repository.HttpClient.OutboundClient;
 import com.nvl.ins_be.repository.HttpClient.OutboundUserClient;
 import com.nvl.ins_be.repository.UserRepository;
+import feign.FeignException;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +36,7 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -43,6 +49,7 @@ public class AuthenticationService {
     PasswordEncoder passwordEncoder;
     OutboundClient outboundClient;
     OutboundUserClient outboundUserClient;
+    EmailClient emailClient;
 
     @NonFinal
     @Value("${jwt.signerKey}")
@@ -63,12 +70,37 @@ public class AuthenticationService {
     @NonFinal
     protected String GRANT_TYPE = "authorization_code";
 
+    @NonFinal
+    @Value("${email.apiKey}")
+    protected String API_KEY;
+
     public AuthenticationResponse authenticate(AuthenticationRequest request){
 
         var user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
         if(!authenticated) throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+
+
+        EmailRequest emailRequest = EmailRequest.builder()
+                .sender(Sender.builder()
+                        .name("NguyenVanLinh")
+                        .email("nvanlinh1406@gmail.com")
+                        .build())
+                .to(List.of(Receive.builder()
+                        .email(request.getEmail())
+                        .name(request.getEmail())
+                        .build()))
+                .subject("Welcome to Instagram")
+                .htmlContent("You just logged into Instagram.")
+                .build();
+
+        try {
+            emailClient.sendEmail(API_KEY, emailRequest);
+        }
+        catch (FeignException e) {
+            throw  new AppException(ErrorCode.CANNOT_SEND_EMAIL);
+        }
 
         var token = generateToken(user);
         return AuthenticationResponse.builder()
@@ -87,10 +119,29 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .build();
 
+        EmailRequest emailRequest = EmailRequest.builder()
+                .sender(Sender.builder()
+                        .name("NguyenVanLinh")
+                        .email("nvanlinh1406@gmail.com")
+                        .build())
+                .to(List.of(Receive.builder()
+                        .email(request.getEmail())
+                        .name(request.getUsername())
+                        .build()))
+                .subject("Welcome to Instagram")
+                .htmlContent("Hello " + request.getFullName())
+                .build();
+
+        try {
+            emailClient.sendEmail(API_KEY, emailRequest);
+        }
+        catch (FeignException e) {
+            throw  new AppException(ErrorCode.CANNOT_SEND_EMAIL);
+        }
+
         userRepository.save(user);
 
         var token = generateToken(user);
-        log.info("Token {}", token);
 
         return AuthenticationResponse.builder()
                 .token(token)
@@ -98,7 +149,6 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse outboundAuthenticate(String code){
-        log.info("{} {} {}", CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
         var response = outboundClient.exchangeToken(ExchangeTokenRequest.builder()
                         .code(code)
                         .clientId(CLIENT_ID)

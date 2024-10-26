@@ -7,11 +7,11 @@ import MessageRequest from "./MessageRequest";
 import { useDispatch, useSelector } from "react-redux";
 import { getChatMessage } from "../../State/Message/Action";
 import { findAllChatByUserId } from "../../State/Chat/Action";
-import MessageContent from "./MessageContent";
 import { getUser } from "../../State/User/Action";
 
 const MessageBar = () => {
   const { chat, user } = useSelector((store) => store);
+  const token = localStorage.getItem("accessToken");
   const [activeTab, setActiveTab] = useState("Primary");
   const dispatch = useDispatch();
   const handleClick = (title) => {
@@ -19,8 +19,10 @@ const MessageBar = () => {
   };
 
   useEffect(() => {
-    dispatch(findAllChatByUserId());
-    dispatch(getUser());
+    dispatch(getUser(token));
+    if(user.user){
+      dispatch(findAllChatByUserId());
+    }
   }, [chat.notification, chat.chat]);
 
   const handleGetMessageByChat = (chatId) => {
