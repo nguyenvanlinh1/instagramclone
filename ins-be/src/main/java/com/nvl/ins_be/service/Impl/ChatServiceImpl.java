@@ -26,12 +26,16 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public Chat createChat(User userReq, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        Chat isChatExist = chatRepository.findSingleChatByUserId(user, userReq);
+        boolean isChatExist = chatRepository.findSingleChatByUserId(user, userReq);
+        if(isChatExist) throw new AppException(ErrorCode.CHAT_EXISTED);
         Chat chat = new Chat();
         chat.setCreatedBy(userReq);
         chat.getUsers().add(user);
         chat.getUsers().add(userReq);
         chat.setGroup(false);
+        chat.setChatName(user.getUsername() + "_" + userReq.getUsername());
+        chat.getAdmins().add(userReq);
+        chat.setChatImage(user.getUserImage());
         return chatRepository.save(chat);
     }
 
@@ -105,7 +109,7 @@ public class ChatServiceImpl implements ChatService {
     public void deleteChat(Long chatId, Long userId) {
         Chat chat = chatRepository.findById(chatId).orElseThrow(() -> new AppException(ErrorCode.CHAT_NOT_EXISTED));
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        if(chat.getAdmins().contains(user)){
+        if(chat.getCreatedBy().getUserId().equals(user.getUserId())){
             chatRepository.delete(chat);
         }
         else throw new AppException(ErrorCode.UNAUTHORIZED_ACTION);

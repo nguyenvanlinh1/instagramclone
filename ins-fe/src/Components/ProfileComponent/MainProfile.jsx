@@ -20,10 +20,9 @@ const MainProfile = () => {
 
   useEffect(() => {
     dispatch(findUserByUsername(param.username));
-  }, []);
+  }, [param.username]);
 
   const usernew = user.byusername.data?.result;
-
   const tabs = [
     {
       tab: "Posts",
@@ -51,7 +50,7 @@ const MainProfile = () => {
       dispatch(getAllPostByUserId(usernew?.userId));
       dispatch(getAllPostByUserSaved(usernew?.userId));
       dispatch(getAllPostByUserLiked(usernew?.userId));
-  }, [post.saved, post.liked, post.posts])
+  }, [post.saved, post.liked])
 
 
   const handleTabClick = (title) => {

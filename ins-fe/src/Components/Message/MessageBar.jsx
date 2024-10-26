@@ -8,9 +8,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { getChatMessage } from "../../State/Message/Action";
 import { findAllChatByUserId } from "../../State/Chat/Action";
 import MessageContent from "./MessageContent";
+import { getUser } from "../../State/User/Action";
 
 const MessageBar = () => {
-  const { chat } = useSelector((store) => store);
+  const { chat, user } = useSelector((store) => store);
   const [activeTab, setActiveTab] = useState("Primary");
   const dispatch = useDispatch();
   const handleClick = (title) => {
@@ -19,7 +20,8 @@ const MessageBar = () => {
 
   useEffect(() => {
     dispatch(findAllChatByUserId());
-  }, [chat.chat]);
+    dispatch(getUser());
+  }, [chat.notification, chat.chat]);
 
   const handleGetMessageByChat = (chatId) => {
     dispatch(getChatMessage(chatId));
@@ -36,34 +38,19 @@ const MessageBar = () => {
     </div>
   );
 
-  const UserItem = ({ src, username }) => (
+  const UserItem = ({ src }) => (
     <div className="flex flex-col items-center">
       <img className="w-20 h-20 rounded-full" src={src} alt="user profile" />
-      <p className="font-thin">{username}</p>
+      <p className="font-thin">Your notes</p>
     </div>
   );
-
-  const users = [
-    {
-      src: "https://th.bing.com/th/id/OIP.6m6AZ7QHFj5JUAc6eWE6CQHaN4?w=182&h=342&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-      username: "username1",
-    },
-    {
-      src: "https://th.bing.com/th/id/OIP.6m6AZ7QHFj5JUAc6eWE6CQHaN4?w=182&h=342&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-      username: "username2",
-    },
-    {
-      src: "https://th.bing.com/th/id/OIP.6m6AZ7QHFj5JUAc6eWE6CQHaN4?w=182&h=342&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-      username: "username3",
-    },
-  ];
 
   return (
     <div className="">
       <div className="border-r-2 border-r-slate-300">
         <div className="flex justify-between px-5 py-8 items-center">
           <div className="flex items-center">
-            <p className="font-semibold text-2xl">username</p>
+            <p className="font-semibold text-2xl">{user.user.data?.result?.username}</p>
             <FaAngleDown className="text-lg" />
           </div>
           <GrChatOption className="text-3xl" />
@@ -85,17 +72,23 @@ const MessageBar = () => {
             onClick={() => setActiveTab("Requests")}
           />
         </div>
-        <div className="mt-8 grid grid-cols-3 justify-items-center">
-          {users.map((user, index) => (
-            <UserItem key={index} src={user.src} username={user.username} />
-          ))}
+        <div className="mt-8 flex ml-8">
+          <UserItem src={user.user.data?.result?.userImage} />
         </div>
         <div className="mt-8 h-[57vh]">
-          {activeTab === "Primary" && (
-            <MessagePrimary item={chat.chats.data?.result} />
+          {chat.chats ? (
+            <>
+              {activeTab === "Primary" && (
+                <MessagePrimary item={chat.chats.data?.result} />
+              )}
+              {activeTab === "General" && <MessageGeneral />}
+              {activeTab === "Requests" && <MessageRequest />}
+            </>
+          ) : (
+            <div className="flex justify-center items-center h-full">
+              <p className="font-bold">Message not found</p>
+            </div>
           )}
-          {activeTab === "General" && <MessageGeneral />}
-          {activeTab === "Requests" && <MessageRequest />}
         </div>
       </div>
     </div>

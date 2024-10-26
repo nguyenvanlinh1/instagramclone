@@ -1,5 +1,5 @@
 import { api } from "../../Config/Config";
-import { GET_ALL_INFO_FAIL, GET_FOLLOWED, GET_FOLLOWER, GET_FOLLOWER_FAIL, UPDATE_INFO, UPDATE_INFO_FAIL } from "../Type/ActionType";
+import { GET_ALL_INFO_FAIL, GET_FOLLOWED, GET_FOLLOWER, GET_FOLLOWER_FAIL, GET_MY_FOLLOWED, UPDATE_INFO, UPDATE_INFO_FAIL } from "../Type/ActionType";
 
 
 export const getFollower = (userId) => async(dispatch) =>{
@@ -32,7 +32,8 @@ export const getMyFollower = () => async(dispatch) =>{
 export const getMyFollowed = () => async(dispatch) =>{
     try {
         const data = await api.get(`/followed`);
-        dispatch({type:GET_FOLLOWED, payload:data})
+        console.log(data)
+        dispatch({type:GET_MY_FOLLOWED, payload:data})
     } catch (error) {
         dispatch({type:GET_ALL_INFO_FAIL, error:error.message})
     }

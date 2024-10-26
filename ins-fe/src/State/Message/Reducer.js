@@ -1,4 +1,4 @@
-import { CREATE_INFO_FAIL, CREATE_MESSAGE, DELETE_INFO_FAIL, DELETE_MESSAGE, GET_MESSAGES } from "../Type/ActionType"
+import { CREATE_INFO_FAIL, CREATE_MESSAGE, DELETE_INFO_FAIL, DELETE_MESSAGE, GET_ALL_INFO_FAIL, GET_MESSAGES } from "../Type/ActionType"
 
 const init = {
     messages:[],
@@ -7,7 +7,7 @@ const init = {
     notification:""
 }
 
-export const messageReducer = (state = init) => (action) => {
+export const messageReducer = (state = init, action) => {
     switch(action.type){
         case GET_MESSAGES:
             return {...state, messages:action.payload}

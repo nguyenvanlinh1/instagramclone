@@ -24,7 +24,6 @@ public class MessageController {
 
     @PostMapping("/send")
     ApiResponse<Message> sendMessage(@RequestBody SendMessageRequest request){
-        User user = userService.getUser();
         return ApiResponse.<Message>builder()
                 .result(messageService.sendMessage(request))
                 .build();
