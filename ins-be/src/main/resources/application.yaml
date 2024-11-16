@@ -25,8 +25,8 @@ email:
 
 
 outbound:
-  client-id: "1040903330486-pjq1nditab2guhaolurvguru7b592m5o.apps.googleusercontent.com"
-  client-secret: "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"
-  redirect-uri: "http://localhost:4545/authenticate"
+  client-id: "${client-id}"
+  client-secret: "${client-secret}"
+  redirect-uri: "${redirect-uri}"
 
 
